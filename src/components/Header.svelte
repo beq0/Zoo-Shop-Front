@@ -3,11 +3,16 @@
     import {DeviceDetectorService} from "../services/deviceDetector.service";
 
     let pathName = '/home';
+    let showToolbar = false;
 
     $: {
         if(DeviceDetectorService.isBrowser) {
-            console.log(pathName);
             pathName = window.location.pathname;
+            window.showToolbar = showToolbar;
+            let toolBar = document.getElementById("toolbar");
+            if (toolBar) {
+                showToolbar ? toolBar.removeAttribute("style") : toolBar.setAttribute("style", "display: none;");
+            }
         }
     }
     
@@ -31,6 +36,19 @@
     .active {
         background-color: #3cb5cf !important;
     }
+
+    .nav {
+        display: flex;
+        align-items: center;
+    }
+
+    .lastItem {
+        margin-right: auto;
+    }
+ 
+    .filterImage {
+        margin-right: 5px;
+    }
 </style>
 
 <div id="mainHeader">
@@ -43,9 +61,15 @@
         <a class="{'nav-link ' + (pathName === '/products' ? 'active' : '')}" id="pills-profile-tab" data-toggle="pill" href="products" role="tab" aria-controls="products" use:link
         on:click={() => pathName='/products'}>Products</a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item lastItem">
         <a class="{'nav-link ' + (pathName === '/history' ? 'active' : '')}" id="pills-contact-tab" data-toggle="pill" href="history" role="tab" aria-controls="histroy" use:link
         on:click={() => pathName='/history'} >Histroy</a>
     </li>
+    {#if pathName === '/products'}
+    <li>
+        <!-- svelte-ignore a11y-missing-attribute -->
+        <input class="filterImage" type="image" src="images/showFilter.png" width="27px" height="27px" on:click={()=>showToolbar=!showToolbar}>
+    </li>
+    {/if}
     </ul>
 </div>
