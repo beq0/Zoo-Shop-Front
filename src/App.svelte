@@ -1,16 +1,22 @@
 <script>
-  import { Router, Route, Link } from "svelte-routing";
+  import { Router, Route, link } from "svelte-routing";
   import { DeviceDetectorService } from "./services/deviceDetector.service";
   import * as Config from "./config";
 
   import TestRoute from "./routes/Test.route.svelte"
+  import Header from "./components/Header.svelte"
+  import Product from "./routes/Product.route.svelte"
 
   // Used for SSR. A falsy value is ignored by the Router.
   export let url = "";
 </script>
 
-<Router url="{url}">
-    <Route path="test" component={TestRoute}></Route>
-</Router>
+<Header/>
 
-Hello world, I wanna be a zoo shop manager one day :)
+<div>
+  <Router url="{url}">
+    <Route path="test" component={TestRoute}></Route>
+    <Route path="products" component={Product}></Route>
+  </Router>  
+</div>
+
