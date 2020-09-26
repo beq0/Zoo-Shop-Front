@@ -3,16 +3,11 @@
     import {DeviceDetectorService} from "../services/deviceDetector.service";
 
     let pathName = '/home';
-    let showToolbar = false;
+    export let showToolbar = false;
 
     $: {
         if(DeviceDetectorService.isBrowser) {
             pathName = window.location.pathname;
-            window.showToolbar = showToolbar;
-            let toolBar = document.getElementById("toolbar");
-            if (toolBar) {
-                showToolbar ? toolBar.removeAttribute("style") : toolBar.setAttribute("style", "display: none;");
-            }
         }
     }
     

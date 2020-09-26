@@ -9,14 +9,16 @@
 
   // Used for SSR. A falsy value is ignored by the Router.
   export let url = "";
+
+  let showToolbar = false;
 </script>
 
-<Header/>
+<Header bind:showToolbar={showToolbar}/>
 
 <div>
   <Router url="{url}">
     <Route path="test" component={TestRoute}></Route>
-    <Route path="products" component={Product}></Route>
+    <Route path="products" component={Product} bind:showToolbar={showToolbar}></Route>
   </Router>  
 </div>
 

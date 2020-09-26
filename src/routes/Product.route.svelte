@@ -5,6 +5,7 @@
     let columnNames = ['სახელი', 'ტიპი', 'რაოდენობა', 'გაყიდვის ფასი', 'ყიდვის ფასი'];
     let filterName=null, filterType=null, filterStartPrice=null, filterEndPrice=null;
     let showModal = false;
+    export let showToolbar;
 
 </script>
 
@@ -47,7 +48,8 @@
     }
 </style>
 
-<div class="toolbar" id="toolbar" style="display: none;">
+{#if showToolbar}
+<div class="toolbar" id="toolbar">
     <div class="form-group toolbar-item toolbar">
         <span>სახელი:&emsp;</span>
         <input type="text" class="form-control" value={filterName}>
@@ -74,6 +76,7 @@
     <!-- svelte-ignore a11y-missing-attribute -->
     <input type="image" src="images/clearFilters.ico" width="27px" height="27px" style="margin: 0 8px;">
 </div>
+{/if}
 
 <table class="table">
     <thead>
