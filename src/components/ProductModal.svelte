@@ -62,6 +62,10 @@
   border-color: #17d417 !important;
 }
 
+.modal-title {
+  font-weight: bold;
+}
+
 </style>
 
 {#if show}

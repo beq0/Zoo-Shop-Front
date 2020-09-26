@@ -67,8 +67,11 @@
     </li>
     {#if pathName === '/products'}
     <li>
-        <!-- svelte-ignore a11y-missing-attribute -->
-        <input class="filterImage" type="image" src="images/showFilter.png" width="27px" height="27px" on:click={()=>showToolbar=!showToolbar}>
+        <div data-tooltip="გაფილტრვა" data-tooltip-location="left">
+            <!-- svelte-ignore a11y-missing-attribute -->
+            <input class="filterImage" type="image" 
+            src="images/showFilter.png" width="27px" height="27px" on:click={()=>showToolbar=!showToolbar}>
+        </div>
     </li>
     {/if}
     </ul>

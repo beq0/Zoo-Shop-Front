@@ -40,6 +40,11 @@
         margin: 0 10px;
         font-style: italic;
     }
+
+    .leftTooltipIconDiv {
+        width: 27px;
+        font-weight: normal;
+    }
 </style>
 
 <div class="toolbar" id="toolbar" style="display: none;">
@@ -77,8 +82,10 @@
             <th scope="col">{column}</th>
         {/each}
         <th class="actionsTh" scope="col">
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <input type="image" src="images/add.jpg" width="27px" height="27px" on:click={()=>{showModal=true}}>
+        <div class="leftTooltipIconDiv" data-tooltip="დამატება" data-tooltip-location="left" style="margin-left: auto;">
+                <!-- svelte-ignore a11y-missing-attribute -->
+                <input type="image" src="images/add.jpg" width="27px" height="27px" on:click={()=>{showModal=true}}>
+            </div>
         </th>
     </tr>
     </thead>
@@ -89,17 +96,20 @@
             {/each}
             <td style="padding-right: 5px;">
                 <div class="actionButtonsDiv">
-                    <!-- svelte-ignore a11y-missing-attribute -->
-                    <input type="image"
-                        src="images/edit.jpg"
-                        class="actionButtons" 
-                        width="27px" height="27px">
-                    <!-- svelte-ignore a11y-missing-attribute -->
-                    <input type="image"
-                        src="images/delete.png"
-                        class="actionButtons" 
-                        width="27px" height="27px"
-                        style="margin-right: 0px;">
+                    <div class="leftTooltipIconDiv" data-tooltip="რედაქტირება" data-tooltip-location="left" style="margin-right: 10px;">
+                        <!-- svelte-ignore a11y-missing-attribute -->
+                        <input type="image"
+                            src="images/edit.jpg"
+                            class="actionButtons" 
+                            width="27px" height="27px">
+                    </div>
+                    <div class="leftTooltipIconDiv" data-tooltip="წაშლა" data-tooltip-location="left" style="margin-right: 5px;">
+                        <!-- svelte-ignore a11y-missing-attribute -->
+                        <input type="image"
+                            src="images/delete.png"
+                            class="actionButtons" 
+                            width="27px" height="27px">
+                    </div>
                 </div>
             </td>
         </tr>
