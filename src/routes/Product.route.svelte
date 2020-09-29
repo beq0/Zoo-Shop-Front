@@ -82,7 +82,7 @@
     <thead>
     <tr>
         {#each columnNames as column}
-            <th scope="col">{column}</th>
+            <th scope="col" style="width: 18%;">{column}</th>
         {/each}
         <th class="actionsTh" scope="col">
         <div class="leftTooltipIconDiv" data-tooltip="დამატება" data-tooltip-location="left" style="margin-left: auto;">
@@ -94,8 +94,8 @@
     </thead>
     <tbody>
         <tr id="adminTr">
-            {#each columnNames as column}
-                <td></td>
+            {#each columnNames as column, i}
+                <td>{i}</td>
             {/each}
             <td style="padding-right: 5px;">
                 <div class="actionButtonsDiv">

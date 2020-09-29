@@ -15,8 +15,8 @@ server.get("*", function(req, res) {
     <meta charset='utf-8'>
     
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
-
-    <title>Svelte app</title>
+    <link rel="icon" href="images/favicon.png" sizes="16x16" type="image/png">
+    <title>Zoo Shop</title>
 
     <link rel='stylesheet' href='/global.css'>
     <link rel='stylesheet' href='/bundle.css'>
