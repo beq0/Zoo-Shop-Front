@@ -1,23 +1,46 @@
 <script>
   import {ProductService} from "../services/product.service";
+  import { onMount } from 'svelte';
+  import { onDestroy } from 'svelte';
+
+  const Type = {
+    FOOD: "საკვები",
+    TOY: "სათამაშო",
+    MEDICINE: "წამალი"
+  }
 
   export let show;
   export let title = 'დამატება';
-
+  export let _id, name = "", type = Type.FOOD, quantity = null, sellingPrice = null, originalPrice = null;
+  export let submited = false;
+  
   const productService = ProductService.getInstance();
 
-  export let name = "", type = "", quantity, sellingPrice, originalPrice;
-  
   async function onSubmit() {
-    let res = await productService.addProduct({
-      name,
-      type,
-      quantity,
-      sellingPrice,
-      originalPrice
-    });
-    show=false;
+    if (name && type && quantity != null && sellingPrice != null && originalPrice != null) {
+      let res = await productService.addProduct({
+        name,
+        type,
+        quantity,
+        sellingPrice,
+        originalPrice
+      });
+      if (res.status === 200) {
+        show=false;
+        submited = true;
+        _id = res.id;
+      }
+    }
   }
+
+  onMount(() => {
+    addEventListener("keyup", (event) => {
+      if (show && event.key === 'Enter') {
+        onSubmit();
+      }
+    });
+  });
+  
 </script>
 
 <style>
@@ -96,7 +119,11 @@
 </div>
 <div class="form-group">
   <div>ტიპი:&emsp;</div>
-  <input type="text" class="form-control" id="type" bind:value={type}>
+  <select class="form-control" bind:value={type}>
+    {#each Object.values(Type) as productType}
+    <option>{productType}</option>
+    {/each}
+  </select>
 </div>
 <div class="form-group">
   <div>რაოდენობა:&emsp;</div>

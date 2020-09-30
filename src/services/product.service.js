@@ -29,4 +29,16 @@ export class ProductService {
         })).json();
         return res;
     }
+
+    async getProducts() {
+        return (await fetch(Config.baseUrl + '/product/findAll', {
+            method: 'GET'
+        })).json();
+    }
+
+    async deleteProduct(productId) {
+        return (await fetch(Config.baseUrl + '/product/delete/' + productId, {
+            method: 'DELETE'
+        })).json();
+    }
 }
