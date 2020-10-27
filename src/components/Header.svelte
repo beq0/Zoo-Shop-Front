@@ -50,17 +50,17 @@
     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
     <li class="nav-item">
         <a class="{'nav-link ' + (pathName === '/home' ? 'active' : '')}" id="pills-home-tab" data-toggle="pill" href="home" role="tab" aria-controls="home" use:link
-        on:click={() => pathName='/home'}>Home</a>
+        on:click={() => pathName='/home'}>მთავარი</a>
     </li>
     <li class="nav-item">
         <a class="{'nav-link ' + (pathName === '/products' ? 'active' : '')}" id="pills-profile-tab" data-toggle="pill" href="products" role="tab" aria-controls="products" use:link
-        on:click={() => pathName='/products'}>Products</a>
+        on:click={() => pathName='/products'}>პროდუქტები</a>
     </li>
     <li class="nav-item lastItem">
         <a class="{'nav-link ' + (pathName === '/history' ? 'active' : '')}" id="pills-contact-tab" data-toggle="pill" href="history" role="tab" aria-controls="histroy" use:link
-        on:click={() => pathName='/history'} >Histroy</a>
+        on:click={() => pathName='/history'}>ისტორია</a>
     </li>
-    {#if pathName === '/products'}
+    {#if pathName === '/products' || pathName === '/history'}
     <li>
         <div data-tooltip="გაფილტრვა" data-tooltip-location="left">
             <!-- svelte-ignore a11y-missing-attribute -->
