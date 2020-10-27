@@ -4,4 +4,13 @@ html, body, #app {
   height: 100%;
   margin: 0;
   padding: 0;
+  background-color: #ede9e9;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+input[type="image"]
+{
+    border: none;
+    outline: none;
 }
