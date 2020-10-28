@@ -1,5 +1,6 @@
 <script>
     import {DeviceDetectorService} from "../services/deviceDetector.service";
+    import { navigate } from "svelte-routing";
     import {HistoryService} from "../services/history.service";
     import {ProductService} from "../services/product.service";
     import { onMount } from 'svelte';
@@ -9,24 +10,28 @@
     const historyService = HistoryService.getInstance();
     const productService = ProductService.getInstance();
 
+
     let filterName='', filterType='', filterStartDate=null, filterEndDate=null;
     let columnNames = ['სახელი', 'ტიპი', 'თარიღი', 'რაოდენობა', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'მოგება'];
+    let historyCount, numOfPages;
+    let marked;
+
+    if(DeviceDetectorService.isBrowser) {
+        let url = new URL(window.location.href);
+        marked = parseInt(url.searchParams.get('page')) || 1;
+    }
 
     let allProducts = [], productsMap = {};
     let histories = [], allHistories = [];
+    
     onMount(async () => {
         allProducts = await productService.getProducts();
         allProducts.forEach(product => {
             productsMap[product._id] = product;
         });
-        console.log(productsMap);
 
-        allHistories = await historyService.getHistories();
-        allHistories.forEach(h => {
-            h.sellDate = new Date(h.sellDate);
-        });
-        histories = allHistories;
-        console.log(histories);
+        historyCount = await historyService.getCount();
+        numOfPages = Math.ceil(historyCount/2);
     })
 
     async function filterHistory() {
@@ -48,7 +53,27 @@
         filterName='', filterType='', filterStartDate=null, filterEndDate=null;
     }
 
+    function pageChanged(i) {
+        marked = i;
+    }
 
+    async function update() {
+        allHistories = await historyService.findHistories({}, marked).catch(err => console.log(err));
+        allHistories.forEach(h => {
+            h.sellDate = new Date(h.sellDate);
+        });
+        histories = allHistories;
+    };
+
+    $: {
+        if(DeviceDetectorService.isBrowser) {
+            let url = new URL(window.location.href);
+            url.searchParams.set('page', marked);
+            navigate(url.toString());
+        }
+        marked;
+        update();
+    }
 </script>
 
 <style>
@@ -138,8 +163,8 @@
     <tbody>
         {#each histories as history, i}
         <tr>
-            <td>{productsMap[history.productId].name}</td>
-            <td>{productsMap[history.productId].productType}</td>
+            <td>{history.productName}</td>
+            <td>{history.productType}</td>
             <td>{(history.sellDate.getMonth() + 1) + "/" + history.sellDate.getDate() + "/" +  history.sellDate.getFullYear()}</td>
             <td>{Number.isInteger(history.amount) ? history.amount : history.amount.toFixed(2)}</td>
             <td style="text-align: end;">{history.sellingPrice.toFixed(2)} ₾</td>
@@ -153,28 +178,40 @@
 <nav aria-label="...">
     <ul class="pagination justify-content-center">
         <li class="page-item">
-            <button class="page-link">
+            <button class="page-link" on:click={()=>{marked=1;}}>
+                &lt;&lt;
+            </button>
+        </li>
+        <li class="page-item">
+            <button class="page-link" on:click={()=>{if(marked > 1) marked--;}}>
                 უკან
             </button>
         </li>
+        {#each (()=>{return new Array(numOfPages)})() as ignored, i}
+            {#if marked - 5 <= i && i <= marked + 3}
+                {#if marked==i+1}
+                    <li class="page-item active">
+                        <button class="page-link" on:click={()=>{pageChanged(i+1)}}>
+                            {i+1}
+                        </button>
+                    </li>
+                {:else}
+                    <li class="page-item">
+                        <button class="page-link" on:click={()=>{pageChanged(i+1)}}>
+                            {i+1}
+                        </button>
+                    </li>
+                {/if}
+            {/if}
+        {/each}
         <li class="page-item">
-            <button class="page-link">
-                1
-            </button>
-        </li>
-        <li class="page-item active">
-            <button class="page-link">
-                2
-            </button>
-        </li>
-        <li class="page-item">
-            <button class="page-link">
-                3
-            </button>
-        </li>
-        <li class="page-item">
-            <button class="page-link">
+            <button class="page-link" on:click={()=>{if(marked < numOfPages) marked++;}}>
                 წინ
+            </button>
+        </li>
+        <li class="page-item">
+            <button class="page-link" on:click={()=>{marked=numOfPages;}}>
+                &gt;&gt;
             </button>
         </li>
     </ul>

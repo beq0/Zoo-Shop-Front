@@ -308,6 +308,7 @@
 bind:show={showSellModal}
 bind:_id={_id}
 bind:productName={name}
+bind:productType={productType}
 bind:amount={amountToSell}
 bind:submited={sellModalSubmited}
 bind:quantity={quantity}
