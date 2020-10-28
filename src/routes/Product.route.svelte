@@ -2,6 +2,7 @@
     import {DeviceDetectorService} from "../services/deviceDetector.service";
     import ProductModal from "../components/ProductModal.svelte"
     import SellModal from "../components/SellModal.svelte"
+    import DeleteModal from "../components/DeleteModal.svelte"
     import {ProductService} from "../services/product.service";
     import { onMount } from 'svelte';
     
@@ -20,10 +21,10 @@
         WEIGHT: "წონითი"
     }
     
-    const productService = ProductService.getInstance();
+    let productService = ProductService.getInstance();
 
     let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'რაოდენობა', 'რაოდ. ტიპი'];
-    let filterName='', filterType='', filterStartPrice=null, filterEndPrice=null;
+    let filterCode = '', filterName='', filterType='', filterStartPrice=null, filterEndPrice=null;
     let showProductModal = false, isChange = false, showSellModal = false;
     let _id, productCode = null, name = null, productType = ProductType.FOOD, sellingPrice = null, 
             originalPrice = null, quantity = null, quantityType = QuanitityType.COUNT;
@@ -31,6 +32,7 @@
     let indexOfSelectedProduct;
     let amountToSell = null;
     let sellModalSubmited = false;
+    let toDeleteId = null, deleteModalShow = false, deleteModalSubmited = false, indexOfProductToDelete = null;
 
     let products = [], allProducts = [];
     onMount(async () => {
@@ -53,6 +55,7 @@
     }
     
     function clearFilters() {
+        filterCode = '';
         filterName='';
         filterType='';
         filterStartPrice=null;
@@ -60,7 +63,9 @@
     }
 
     function filterProducts() {
-        products = allProducts.filter(prod => prod.name.includes(filterName) && prod.productType.includes(filterType) 
+        products = allProducts.filter(prod => prod.code.toLowerCase().includes(filterCode.toLowerCase())
+                                            && prod.name.toLowerCase().includes(filterName.toLowerCase())
+                                            && prod.productType.toLowerCase().includes(filterType.toLowerCase()) 
                                             && (filterStartPrice == null || prod.sellingPrice >= filterStartPrice)
                                             && (filterEndPrice == null || prod.sellingPrice <= filterEndPrice))
     }
@@ -75,9 +80,28 @@
         showSellModal = true;
     }
 
+    function onDelete(productId, index) {
+        toDeleteId = productId;
+        deleteModalShow = true;
+        indexOfProductToDelete = index;
+    }
+
     $: {
         if (productModalSubmited) {
-            let changedProduct = {
+            productModalIsSubmited();
+        }
+
+        if (sellModalSubmited) {
+            sellModalIsSubmited();
+        }
+
+        if (deleteModalSubmited) {
+            deleteModalIsSubmited();
+        }
+    }
+
+    function productModalIsSubmited() {
+        let changedProduct = {
                 _id,
                 code: productCode,
                 name,
@@ -108,12 +132,18 @@
             quantity = null;
             quantityType = QuanitityType.COUNT
             productModalSubmited = false;
-        }
-        if (sellModalSubmited) {
-            products[indexOfSelectedProduct].quantity = quantity;
-            name = null;
-            sellModalSubmited = false;
-        }
+    }
+
+    function sellModalIsSubmited() {
+        products[indexOfSelectedProduct].quantity = quantity;
+        name = null;
+        sellModalSubmited = false;
+    }
+
+    function deleteModalIsSubmited() {
+        products = [...products.slice(0, indexOfProductToDelete), ...products.slice(indexOfProductToDelete + 1)];
+        allProducts = allProducts.filter(prod => prod._id != toDeleteId);
+        deleteModalSubmited = false;
     }
 
 </script>
@@ -163,6 +193,11 @@
 
 {#if showToolbar}
 <div class="toolbar" id="toolbar">
+    <div class="form-group toolbar-item toolbar">
+        <span>კოდი:&emsp;</span>
+        <input type="text" class="form-control" bind:value={filterCode}>
+    </div>
+    
     <div class="form-group toolbar-item toolbar">
         <span>სახელი:&emsp;</span>
         <input type="text" class="form-control" bind:value={filterName}>
@@ -245,9 +280,7 @@
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <input type="image" src="images/delete.png" class="actionButtons" width="27px" height="27px"
                             on:click={async () => {
-                                let res = await productService.deleteProduct(product._id);
-                                products = [...products.slice(0, i), ...products.slice(i + 1)];
-                                allProducts = allProducts.filter(prod => prod._id != product._id);
+                                onDelete(product._id, i)
                             }}>
                     </div>
                 </div>
@@ -280,4 +313,11 @@ bind:submited={sellModalSubmited}
 bind:quantity={quantity}
 sellingPrice={sellingPrice}
 bind:originalPrice={originalPrice}
+/>
+
+<DeleteModal
+bind:show={deleteModalShow}
+bind:submited={deleteModalSubmited}
+bind:toDeleteId={toDeleteId}
+bind:service={productService}
 />

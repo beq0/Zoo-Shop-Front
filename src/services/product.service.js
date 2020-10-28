@@ -34,7 +34,7 @@ export class ProductService {
         })).json();
     }
 
-    async deleteProduct(productId) {
+    async delete(productId) {
         return (await fetch(Config.baseUrl + '/product/delete/' + productId, {
             method: 'DELETE'
         })).json();
