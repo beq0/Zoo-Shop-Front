@@ -6,6 +6,9 @@
     import { onMount } from 'svelte';
     
     export let showToolbar;
+
+    const DEFAULT_PAGINATION_LIMIT = 2;
+    const PAGES_BEFORE_AND_AFTER = 4;
     
     const historyService = HistoryService.getInstance();
     const productService = ProductService.getInstance();
@@ -31,7 +34,7 @@
         });
 
         historyCount = await historyService.getCount();
-        numOfPages = Math.ceil(historyCount/2);
+        numOfPages = Math.ceil(historyCount/DEFAULT_PAGINATION_LIMIT);
     })
 
     async function filterHistory() {
@@ -58,7 +61,7 @@
     }
 
     async function update() {
-        allHistories = await historyService.findHistories({}, marked).catch(err => console.log(err));
+        allHistories = await historyService.findHistories({}, marked, DEFAULT_PAGINATION_LIMIT).catch(err => console.log(err));
         allHistories.forEach(h => {
             h.sellDate = new Date(h.sellDate);
         });
@@ -188,8 +191,8 @@
             </button>
         </li>
         {#each (()=>{return new Array(numOfPages)})() as ignored, i}
-            {#if marked - 5 <= i && i <= marked + 3}
-                {#if marked==i+1}
+            {#if marked - PAGES_BEFORE_AND_AFTER < i && i < marked + PAGES_BEFORE_AND_AFTER}
+                {#if marked===i+1}
                     <li class="page-item active">
                         <button class="page-link" on:click={()=>{pageChanged(i+1)}}>
                             {i+1}

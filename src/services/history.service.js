@@ -23,8 +23,8 @@ export class HistoryService {
         })
     }
 
-    async findHistories(filters, page) {
-        return (await fetch(Config.baseUrl + '/history/findHistories/' + page + '/2', {
+    async findHistories(filters, page, limit) {
+        return (await fetch(Config.baseUrl + '/history/findHistories/' + page + '/' + limit, {
             headers: { "Content-Type": "application/json" },
             method: 'POST',
             body: JSON.stringify(filters)
