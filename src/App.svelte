@@ -1,5 +1,5 @@
 <script>
-  import { Router, Route, link } from "svelte-routing";
+  import { Router, Route, link, navigate } from "svelte-routing";
   import { DeviceDetectorService } from "./services/deviceDetector.service";
   import * as Config from "./config";
 
@@ -10,8 +10,12 @@
 
   // Used for SSR. A falsy value is ignored by the Router.
   export let url = "";
+  if(DeviceDetectorService.isBrowser && window.location.pathname == '/') {
+    navigate("/home");   
+  }
 
   let showToolbar = false;
+
 </script>
 
 <Header bind:showToolbar={showToolbar}/>

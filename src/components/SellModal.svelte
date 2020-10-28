@@ -3,7 +3,7 @@
     import {HistoryService} from "../services/history.service";
     import { onMount } from 'svelte';
 
-    export let show = false, _id, productName = '', amount = null, quantity = null,
+    export let show = false, _id, productName = '', productType = '', amount = null, quantity = null,
     submited = false, originalPrice = null, sellingPrice = null;
 
     const date = new Date();
@@ -46,6 +46,7 @@
         let history = {
           productId: _id,
           productName,
+          productType,
           amount,
           originalPrice,
           sellingPrice,
