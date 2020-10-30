@@ -74,6 +74,7 @@
         _id = product._id;
         name = product.name;
         quantity = product.quantity;
+        quantityType = product.quantityType;
         sellingPrice = product.sellingPrice;
         originalPrice = product.originalPrice;
         indexOfSelectedProduct = i;
@@ -257,8 +258,8 @@
             <td>{product.productType}</td>
             <td style="text-align: end;">{product.sellingPrice.toFixed(2)} ₾</td>
             <td style="text-align: end;">{product.originalPrice.toFixed(2)} ₾</td>
-            <td>{(Number.isInteger(product.quantity) ? product.quantity : product.quantity.toFixed(2)) +
-                 (product.quantityType == QuanitityType.WEIGHT ? " კგ" : "")}</td>
+            <td>{(Number.isInteger(product.quantity) ? product.quantity : product.quantity.toFixed(product.quantityType == QuanitityType.WEIGHT ? 3 : 2)) +
+                 (product.quantityType == QuanitityType.WEIGHT ? " კგ." : " ც.")}</td>
             <td>{product.quantityType}</td>
             <td style="padding-right: 5px;">
                 <div class="actionButtonsDiv">
@@ -314,6 +315,7 @@ bind:submited={sellModalSubmited}
 bind:quantity={quantity}
 sellingPrice={sellingPrice}
 bind:originalPrice={originalPrice}
+bind:quantityType={quantityType}
 />
 
 <DeleteModal

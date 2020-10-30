@@ -4,8 +4,13 @@
     import { onMount } from 'svelte';
     import WarningModal from './WarningModal.svelte';
 
+    const QuanitityType = {
+      COUNT: "რაოდენობითი",
+      WEIGHT: "წონითი"
+    }
+
     export let show = false, _id, productName = '', productType = '', amount = null, quantity = null,
-    submited = false, originalPrice = null, sellingPrice = null;
+    quantityType = QuantityType.COUNT, submited = false, originalPrice = null, sellingPrice = null;
 
     let showWarningModal = false, warningModalMessage = '';
     const date = new Date();
@@ -24,6 +29,21 @@
         }
       });
     });
+
+    function isCountType() {
+      return quantityType == QuanitityType.COUNT;
+    }
+
+    function isInt(n) {
+      return n % 1 === 0;
+    }
+
+    function getDecimalPoints(n) {
+      if (n == null) return 0;
+      let stringNumber = n.toString();
+      if (!stringNumber.includes('.')) return 0;
+      return stringNumber.length - (stringNumber.indexOf('.') + 1);
+    }
     
     function onClose() {
         _id = null;
@@ -69,11 +89,22 @@
     }
 
     $: {
-        if (amount < 0) {
-            amount = 0;
-        } else if (quantity && quantity - amount <= 0) {
-            amount = quantity;
-        }
+      // if the amount is less than 0 or more than the available quantity, fix it
+      if (amount < 0) {
+          amount = 0;
+      } else if (quantity && quantity - amount <= 0) {
+          amount = quantity;
+      }
+
+      // if the amount is not the integer and the product's quantity type is COUNT, floor the amount
+      if (isCountType() && !isInt(amount)) {
+        amount = Math.floor(amount);
+      }
+      
+      // if the amount's decimal points are more than 3, fix it to 3
+      if (!isCountType() && getDecimalPoints(amount) > 3) {
+        amount = amount.toFixed(3);
+      }
     }
 
   </script>
@@ -100,7 +131,7 @@
         <hr>
         <div class="form-group">
             <div>რაოდენობა:&emsp;</div>
-            <input type="number" class="form-control" id="amount" bind:value={amount} placeholder={amount}>
+            <input type="number" class="form-control" id="amount" bind:value={amount} placeholder={isCountType() ? 'ცალობითი რაოდენობა' : 'წონითი რაოდენობა'}>
         </div>
         <div class="form-group">
             <div>ფასი:&emsp;</div>

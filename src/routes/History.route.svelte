@@ -169,10 +169,10 @@
             <td>{history.productName}</td>
             <td>{history.productType}</td>
             <td>{(history.sellDate.getMonth() + 1) + "/" + history.sellDate.getDate() + "/" +  history.sellDate.getFullYear()}</td>
-            <td>{Number.isInteger(history.amount) ? history.amount : history.amount.toFixed(2)}</td>
+            <td>{Number.isInteger(history.amount) ? history.amount : history.amount.toFixed(3)}</td>
             <td style="text-align: end;">{history.sellingPrice.toFixed(2)} ₾</td>
             <td style="text-align: end;">{history.originalPrice.toFixed(2)} ₾</td>
-            <td style="text-align: end;">{((history.sellingPrice - history.originalPrice) * history.amount).toFixed(2)} ₾</td>
+            <td style="text-align: end;">{history.benefit.toFixed(2)} ₾</td>
         </tr>
         {/each}
     </tbody>
