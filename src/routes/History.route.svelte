@@ -7,7 +7,7 @@
     
     export let showToolbar;
 
-    const DEFAULT_PAGINATION_LIMIT = 5;
+    const DEFAULT_PAGINATION_LIMIT = 3;
     const PAGES_BEFORE_AND_AFTER = 4;
     
     const historyService = HistoryService.getInstance();
@@ -18,6 +18,7 @@
     let columnNames = ['სახელი', 'ტიპი', 'თარიღი', 'რაოდენობა', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'მოგება'];
     let historyCount, numOfPages;
     let marked;
+    let pages = [];
 
     if(DeviceDetectorService.isBrowser) {
         let url = new URL(window.location.href);
@@ -35,21 +36,38 @@
 
         historyCount = await historyService.getCount();
         numOfPages = Math.ceil(historyCount/DEFAULT_PAGINATION_LIMIT);
+        if(marked > numOfPages) marked = 1;
+        pages = new Array(numOfPages);
     })
 
     async function filterHistory() {
-        console.log(filterName, filterType, filterStartDate, filterEndDate);
+        if(!DeviceDetectorService.isBrowser) return;
+        marked = 1;
         let filters = {
             productName: filterName,
+            productType: filterType,
             sellDateFrom: filterStartDate,
             sellDateTo: filterEndDate
         }
-        allHistories = await historyService.findHistories(filters);
+        historyCount = await historyService.getCount(filters);
+        numOfPages = Math.ceil(historyCount/DEFAULT_PAGINATION_LIMIT);
+        pages = new Array(numOfPages);
+        getFilteredData();
+    }
+
+    async function getFilteredData() {
+        if(!DeviceDetectorService.isBrowser) return;
+        let filters = {
+            productName: filterName,
+            productType: filterType,
+            sellDateFrom: filterStartDate,
+            sellDateTo: filterEndDate
+        }
+        allHistories = await historyService.findHistories(filters, marked, DEFAULT_PAGINATION_LIMIT);
         allHistories.forEach(h => {
             h.sellDate = new Date(h.sellDate);
         });
         histories = allHistories;
-        console.log(histories);
     }
 
     function clearFilters() {
@@ -60,22 +78,13 @@
         marked = i;
     }
 
-    async function update() {
-        allHistories = await historyService.findHistories({}, marked, DEFAULT_PAGINATION_LIMIT).catch(err => console.log(err));
-        allHistories.forEach(h => {
-            h.sellDate = new Date(h.sellDate);
-        });
-        histories = allHistories;
-    };
-
     $: {
         if(DeviceDetectorService.isBrowser) {
             let url = new URL(window.location.href);
             url.searchParams.set('page', marked);
             navigate(url.toString());
         }
-        marked;
-        update();
+        getFilteredData();
     }
 </script>
 
@@ -190,21 +199,13 @@
                 უკან
             </button>
         </li>
-        {#each (()=>{return new Array(numOfPages)})() as ignored, i}
-            {#if marked - PAGES_BEFORE_AND_AFTER < i && i < marked + PAGES_BEFORE_AND_AFTER}
-                {#if marked===i+1}
-                    <li class="page-item active">
-                        <button class="page-link" on:click={()=>{pageChanged(i+1)}}>
-                            {i+1}
-                        </button>
-                    </li>
-                {:else}
-                    <li class="page-item">
-                        <button class="page-link" on:click={()=>{pageChanged(i+1)}}>
-                            {i+1}
-                        </button>
-                    </li>
-                {/if}
+        {#each pages as ignored, i}
+            {#if marked - 1 - PAGES_BEFORE_AND_AFTER < i && i < marked + PAGES_BEFORE_AND_AFTER}
+                <li class={"page-item " + (marked===i+1 ? "active" : "")}>
+                    <button class="page-link" on:click={()=>{pageChanged(i+1)}}>
+                        {i+1}
+                    </button>
+                </li>
             {/if}
         {/each}
         <li class="page-item">
