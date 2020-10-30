@@ -220,13 +220,13 @@
     </div>
 
     <!-- svelte-ignore a11y-missing-attribute -->
-    <div data-tooltip="ძებნა" data-tooltip-location="left">
+    <div>
         <input type="image" src="images/search.png" width="27px" height="27px" style="margin: 0 8px;"
             on:click={filterProducts}>
     </div>
     
     <!-- svelte-ignore a11y-missing-attribute -->
-    <div data-tooltip="ფილტრის გასუფთავება" data-tooltip-location="left">
+    <div>
         <input type="image" src="images/clearFilters.ico" width="27px" height="27px" style="margin: 0 8px;"
             on:click={clearFilters}>
     </div>
