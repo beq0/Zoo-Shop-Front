@@ -1,7 +1,10 @@
 <script>
     import { onMount } from 'svelte';
+    import WarningModal from './WarningModal.svelte'
 
     export let show = false, toDeleteId, service, submited;
+
+    let showWarningModal = false, warningModalMessage = '';
 
     onMount(() => {
         addEventListener("keyup", (event) => {
@@ -24,62 +27,15 @@
         if (res.status === 200) {
             submited = true;
             onClose();
+        } else {
+            warningModalMessage = 'დაფიქსირდა შეცდომა ობიექტის წაშლის დროს'
+            showWarningModal = true;
         }
     }
 
 </script>
   
-<style>
-    .popup .overlay {
-        position:fixed;
-        top:0px;
-        left:0px;
-        width:100vw;
-        height:100vh;
-        background:rgba(0,0,0,0.7);
-        z-index:1;
-        display:none;
-    }
-  
-    .content {
-        padding: 12px 25px !important;
-    }
-  
-    .popup .content {
-        position:absolute;
-        top:50%;
-        left:50%;
-        transform:translate(-50%,-50%) scale(0);
-        background:#fff;
-        z-index:2;
-        text-align:center;
-        padding:20px;
-        box-sizing:border-box;
-        font-family:"Open Sans",sans-serif;
-    }
-  
-    .popup.active .overlay {
-        display:block;
-    }
-  
-    .popup.active .content {
-        transition:all 300ms ease-in-out;
-        transform:translate(-50%,-50%) scale(1);
-    }
-  
-    .closeButton {
-        background: #f15454 !important;
-        border-color: #f15454 !important;
-    }
-  
-    .confirmButton {
-        background: #17d417 !important;
-        border-color: #17d417 !important;
-    }
-  
-    .modal-title {
-        font-weight: bold;
-    }
+<style> 
   
 </style>
   
@@ -96,3 +52,8 @@
     </div>
 </div>
 {/if}
+
+<WarningModal
+bind:show={showWarningModal}
+bind:message={warningModalMessage}
+/>

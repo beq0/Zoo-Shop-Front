@@ -2,10 +2,12 @@
     import {ProductService} from "../services/product.service";
     import {HistoryService} from "../services/history.service";
     import { onMount } from 'svelte';
+    import WarningModal from './WarningModal.svelte';
 
     export let show = false, _id, productName = '', productType = '', amount = null, quantity = null,
     submited = false, originalPrice = null, sellingPrice = null;
 
+    let showWarningModal = false, warningModalMessage = '';
     const date = new Date();
     let sellDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 
@@ -39,21 +41,31 @@
         }
         let res = await productService.changeProduct(updatedProduct);
         if (res.status === 200) {
-            show=false;
-            submited = true;
-            _id = res._id;
+          // TODO! აქ დასამატებელი იქნება ისტორიის დამატებისას ხომ არ მოხდა შეცდომა
+          addSellHistory();
+          show=false;
+          submited = true;
+          _id = res._id;
+        } else {
+          warningModalMessage = 'დაფიქსირდა შეცდომა პროდუქტისთვის რაოდენობის დაკლების დროს!'
+          showWarningModal = true;
+          return;
         }
-        let history = {
-          productId: _id,
-          productName,
-          productType,
-          amount,
-          originalPrice,
-          sellingPrice,
-          sellDate
-        }
-        historyService.addHistory(history);
-        amount = null;
+        
+    }
+
+    function addSellHistory() {
+      let history = {
+        productId: _id,
+        productName,
+        productType,
+        amount,
+        originalPrice,
+        sellingPrice,
+        sellDate
+      }
+      historyService.addHistory(history);
+      amount = null;
     }
 
     $: {
@@ -67,43 +79,7 @@
   </script>
   
   <style>
-    .popup .overlay {
-      position:fixed;
-      top:0px;
-      left:0px;
-      width:100vw;
-      height:100vh;
-      background:rgba(0,0,0,0.7);
-      z-index:1;
-      display:none;
-    }
-  
-    .content {
-      padding: 12px 25px !important;
-    }
-  
-    .popup .content {
-      position:absolute;
-      top:50%;
-      left:50%;
-      transform:translate(-50%,-50%) scale(0);
-      background:#fff;
-      z-index:2;
-      text-align:center;
-      padding:20px;
-      box-sizing:border-box;
-      font-family:"Open Sans",sans-serif;
-    }
-  
-    .popup.active .overlay {
-      display:block;
-    }
-  
-    .popup.active .content {
-      transition:all 300ms ease-in-out;
-      transform:translate(-50%,-50%) scale(1);
-    }
-  
+    
     .form-group {
       display: flex;
       justify-content: flex-end;
@@ -112,20 +88,6 @@
   
     .form-control {
       width: 300px;
-    }
-  
-    .closeButton {
-      background: #f15454 !important;
-      border-color: #f15454 !important;
-    }
-  
-    .confirmButton {
-      background: #17d417 !important;
-      border-color: #17d417 !important;
-    }
-  
-    .modal-title {
-      font-weight: bold;
     }
   
   </style>
@@ -156,3 +118,9 @@
     </div>
   </div>
   {/if}
+
+
+<WarningModal
+bind:show={showWarningModal}
+bind:message={warningModalMessage}
+/>
