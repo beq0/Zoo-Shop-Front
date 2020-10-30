@@ -54,10 +54,9 @@
 
     async function onSubmit() {
         if(!amount) return;
-        quantity -= amount;
         let updatedProduct = {
             _id: _id,
-            quantity,
+            quantity: quantity - amount,
         }
         let res = await productService.changeProduct(updatedProduct);
         if (res.status === 200) {
@@ -66,12 +65,13 @@
           show=false;
           submited = true;
           _id = res._id;
+          quantity -= amount;
+          amount = null;
         } else {
           warningModalMessage = 'დაფიქსირდა შეცდომა პროდუქტისთვის რაოდენობის დაკლების დროს!'
           showWarningModal = true;
           return;
         }
-        
     }
 
     function addSellHistory() {
@@ -85,14 +85,13 @@
         sellDate
       }
       historyService.addHistory(history);
-      amount = null;
     }
 
     $: {
       // if the amount is less than 0 or more than the available quantity, fix it
       if (amount < 0) {
           amount = 0;
-      } else if (quantity && quantity - amount <= 0) {
+      } else if ((quantity || quantity == 0) && quantity - amount <= 0) {
           amount = quantity;
       }
 

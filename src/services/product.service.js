@@ -19,7 +19,6 @@ export class ProductService {
     }
     
     async changeProduct(product) {
-        console.log(product);
         const res = await (await fetch(Config.baseUrl + '/product/change', {
             headers: { "Content-Type": "application/json" },
             method: 'POST',

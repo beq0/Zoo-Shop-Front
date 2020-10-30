@@ -31,9 +31,11 @@ export class HistoryService {
         })).json();
     }
 
-    async getCount() {
+    async getCount(filter) {
         return (await fetch(Config.baseUrl + '/history/getCount', {
-            method: 'GET'
+            headers: { "Content-Type": "application/json" },
+            method: 'POST',
+            body: JSON.stringify(filter)
         })).json();
     }
     
