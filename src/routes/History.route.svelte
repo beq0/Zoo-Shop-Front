@@ -63,7 +63,7 @@
             sellDateFrom: filterStartDate,
             sellDateTo: filterEndDate
         }
-        allHistories = await historyService.findHistories(filters, marked, DEFAULT_PAGINATION_LIMIT);
+        allHistories = await historyService.findHistories(filters, marked, DEFAULT_PAGINATION_LIMIT, 1);
         allHistories.forEach(h => {
             h.sellDate = new Date(h.sellDate);
         });
