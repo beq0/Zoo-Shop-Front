@@ -173,10 +173,6 @@ import DetailedProducts from "../components/DetailedProducts.svelte";
         color: #00c400;
     }
 
-    .result-losing {
-        color: #ff2e2e;
-    }
-
 </style>
 
 <div class="all-parts">

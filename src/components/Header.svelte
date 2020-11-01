@@ -48,21 +48,30 @@
 
 <div id="mainHeader">
     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+
     <li class="nav-item">
         <a class="{'nav-link ' + (pathName === '/home' ? 'active' : '')}" id="pills-home-tab" data-toggle="pill" href="home" role="tab" aria-controls="home" use:link
         on:click={() => pathName='/home'}>მთავარი</a>
     </li>
+
     <li class="nav-item">
         <a class="{'nav-link ' + (pathName === '/products' ? 'active' : '')}" id="pills-profile-tab" data-toggle="pill" href="products" role="tab" aria-controls="products" use:link
         on:click={() => pathName='/products'}>პროდუქტები</a>
     </li>
-    <li class="nav-item lastItem">
+
+    <li class="nav-item">
         <a class="{'nav-link ' + (pathName === '/history' ? 'active' : '')}" id="pills-contact-tab" data-toggle="pill" href="history" role="tab" aria-controls="histroy" use:link
         on:click={() => pathName='/history'}>ისტორია</a>
     </li>
-    {#if pathName === '/products' || pathName === '/history'}
+
+    <li class="nav-item lastItem">
+        <a class="{'nav-link ' + (pathName === '/parameter' ? 'active' : '')}" id="pills-contact-tab" data-toggle="pill" href="parameter" role="tab" aria-controls="parameter" use:link
+        on:click={() => pathName='/parameter'}>პარამეტრები</a>
+    </li>
+
+    {#if pathName === '/products' || pathName === '/history' || pathName === '/parameter'}
     <li>
-        <div data-tooltip="გაფილტრვა" data-tooltip-location="left">
+        <div>
             <!-- svelte-ignore a11y-missing-attribute -->
             <input class="filterImage" type="image" 
             src="images/showFilter.png" width="27px" height="27px" on:click={()=>showToolbar=!showToolbar}>

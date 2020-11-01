@@ -240,11 +240,11 @@
             <th scope="col" style="width: 16%;">{column}</th>
         {/each}
         <th class="actionsTh" scope="col">
-        <div class="leftTooltipIconDiv" data-tooltip="დამატება" data-tooltip-location="left" style="margin-left: auto;">
+        <div class="leftTooltipIconDiv" style="margin-left: auto;">
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <input type="image" src="images/add.jpg" width="27px" height="27px" on:click={()=>{
-                    showProductModal = true;
                     isChange = false;
+                    showProductModal = true;
                 }}>
             </div>
         </th>
