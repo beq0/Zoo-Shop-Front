@@ -5,9 +5,6 @@
 
     onMount(() => {
         addEventListener("keyup", (event) => {
-            if (show && event.key === 'Enter') {
-                onClose();
-            }
             if (show && event.key === 'Escape') {
                 onClose();
             }

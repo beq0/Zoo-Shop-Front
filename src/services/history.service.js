@@ -23,8 +23,9 @@ export class HistoryService {
         })
     }
 
-    async findHistories(filters, page, limit) {
-        return (await fetch(Config.baseUrl + '/history/findHistories/' + page + '/' + limit, {
+    // pass 1 for histories with pagination, or 0 otherwise
+    async findHistories(filters, page, limit, isPagination) {
+        return (await fetch(Config.baseUrl + '/history/findHistories/' + page + '/' + limit + '/' + isPagination, {
             headers: { "Content-Type": "application/json" },
             method: 'POST',
             body: JSON.stringify(filters)
