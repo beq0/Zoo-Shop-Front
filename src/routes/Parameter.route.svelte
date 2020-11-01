@@ -15,7 +15,7 @@
     let parameterService = ParameterService.getInstance();
 
     let columnNames = ['სახელი', 'აღწერა', 'ტიპი', 'მნიშვნელობა'];
-    let filterName = '', filterDescription = '', filterType = ParameterType.INTEGER, filterValue = '';
+    let filterName = '', filterDescription = '', filterType = '', filterValue = '';
     let showParameterModal = false, isChange = false, parameterModalSubmited = false;
     let _id, name = null, description = null, parameterType = ParameterType.INTEGER, value = null;
     let indexOfSelectedParameter;
@@ -24,6 +24,7 @@
     let parameters = [], allParameters = [];
     onMount(async () => {
         allParameters = await parameterService.findParameters();
+        allParameters.reverse();
         parameters = allParameters;
     });
 
@@ -41,15 +42,15 @@
     function clearFilters() {
         filterName = '';
         filterDescription = '';
-        filterType = ParameterType.INTEGER;
+        filterType = '';
         filterValue = '';
     }
 
     function filterParameters() {
-        parameters = allParameters.filter(param => prod.name.toLowerCase().includes(filterName.toLowerCase())
-                                            && prod.description.toLowerCase().includes(filterDescription.toLowerCase())
-                                            && prod.parameterType.toLowerCase().includes(filterType.toLowerCase())
-                                            && prod.value.toLowerCase().includes(filterValue.toLowerCase()));
+        parameters = allParameters.filter(param => param.name.toLowerCase().includes(filterName.toLowerCase())
+                                            && param.description.toLowerCase().includes(filterDescription.toLowerCase())
+                                            && param.parameterType.toLowerCase().includes(filterType.toLowerCase())
+                                            && param.value.toLowerCase().includes(filterValue.toLowerCase()));
     }
 
     function onDelete(parameterId, index) {

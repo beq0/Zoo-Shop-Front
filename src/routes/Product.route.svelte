@@ -1,32 +1,35 @@
 <script>
     import {DeviceDetectorService} from "../services/deviceDetector.service";
-    import ProductModal from "../components/ProductModal.svelte"
-    import SellModal from "../components/SellModal.svelte"
-    import DeleteModal from "../components/DeleteModal.svelte"
+    import ProductModal from "../components/ProductModal.svelte";
+    import SellModal from "../components/SellModal.svelte";
+    import DeleteModal from "../components/DeleteModal.svelte";
     import {ProductService} from "../services/product.service";
+    import { ParameterService } from "../services/parameter.service";
     import { onMount } from 'svelte';
     
     export let showToolbar;
 
-    const ProductType = {
-        FOOD: "საკვები",
-        TOY: "სათამაშო",
-        MEDICINE: "წამალი",
-        ANIMAL: "ცხოველი",
-        OTHER: "სხვა"
+    const ParameterType = {
+        INTEGER: "რიცხვი",
+        STRING: "ტექსტი",
+        LIST: "სია"
     }
 
-    const QuanitityType = {
+    let ProductType = [
+        "სხვა"
+    ]
+
+    let QuanitityType = {
         COUNT: "რაოდენობითი",
         WEIGHT: "წონითი"
     }
     
-    let productService = ProductService.getInstance();
+    let productService = ProductService.getInstance(), parameterService = ParameterService.getInstance();
 
     let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'რაოდენობა', 'რაოდ. ტიპი'];
     let filterCode = '', filterName='', filterType='', filterStartPrice=null, filterEndPrice=null;
     let showProductModal = false, isChange = false, showSellModal = false;
-    let _id, productCode = null, name = null, productType = ProductType.FOOD, sellingPrice = null, 
+    let _id, productCode = null, name = null, productType = ProductType[0], sellingPrice = null, 
             originalPrice = null, quantity = null, quantityType = QuanitityType.COUNT;
     let productModalSubmited = false;
     let indexOfSelectedProduct;
@@ -37,8 +40,16 @@
     let products = [], allProducts = [];
     onMount(async () => {
         allProducts = await productService.getProducts();
+        allProducts.reverse();
         products = allProducts;
+
+        initializeParameters();
     });
+
+    async function initializeParameters() {
+        let res = await parameterService.getParameter("productTypes", ParameterType.LIST, ["სხვა"]);
+        ProductType = ('' + res.value).split(",");
+    }
 
     function onChange(product, i) {
         _id = product._id
@@ -127,7 +138,7 @@
             }
             productCode = null;
             name = null;
-            productType = ProductType.FOOD;
+            productType = ProductType[0];
             sellingPrice = null;
             originalPrice = null;
             quantity = null;

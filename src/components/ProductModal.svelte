@@ -1,15 +1,18 @@
 <script>
   import {ProductService} from "../services/product.service";
+  import { ParameterService } from "../services/parameter.service";
   import { onMount } from 'svelte';
   import WarningModal from './WarningModal.svelte'
 
-  const ProductType = {
-    FOOD: "საკვები",
-    TOY: "სათამაშო",
-    MEDICINE: "წამალი",
-    ANIMAL: "ცხოველი",
-    OTHER: "სხვა"
+  const ParameterType = {
+    INTEGER: "რიცხვი",
+    STRING: "ტექსტი",
+    LIST: "სია"
   }
+
+  let ProductType = [
+    "სხვა"
+  ]
 
   const QuanitityType = {
     COUNT: "რაოდენობითი",
@@ -18,10 +21,13 @@
 
   export let show;
   export let title = 'დამატება';
-  export let _id, productCode = null, name = "", productType = ProductType.FOOD, 
+  export let _id, productCode = null, name = "", productType = ProductType[0], 
           sellingPrice = null, originalPrice = null, quantity = null, quantityType = QuanitityType.COUNT;
   export let submited = false;
   export let isChange;
+
+  const productService = ProductService.getInstance();
+  const parameterService = ParameterService.getInstance();
 
   let showWarningModal = false, warningModalMessage = '';
   
@@ -34,10 +40,15 @@
         onClose();
       }
     });
-  });
-  
-  const productService = ProductService.getInstance();
 
+    initializeParameters()
+  });
+
+  async function initializeParameters() {
+    let res = await parameterService.getParameter("productTypes", ParameterType.LIST, ["სხვა"]);
+    ProductType = ('' + res.value).split(",");
+  }
+  
   async function onSubmit() {
     let updatedProduct = {
       _id,
@@ -69,7 +80,7 @@
     _id = null
     productCode = null
     name = null;
-    productType = ProductType.FOOD;
+    productType = ProductType[0];
     sellingPrice = null;
     originalPrice = null;
     quantity = null;

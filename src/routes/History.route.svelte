@@ -7,7 +7,7 @@
     
     export let showToolbar;
 
-    const DEFAULT_PAGINATION_LIMIT = 3;
+    const DEFAULT_PAGINATION_LIMIT = 5;
     const PAGES_BEFORE_AND_AFTER = 4;
     
     const historyService = HistoryService.getInstance();

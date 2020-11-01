@@ -15,6 +15,20 @@ export class ParameterService {
         })).json();
     }
 
+    async getParameter(name, parameterType, defaultValue) {
+        const parameter = {
+            name,
+            parameterType,
+            defaultValue
+        }
+        const res = await (await fetch(Config.baseUrl + '/parameter/getParameter', {
+            headers: { "Content-Type": "application/json" },
+            method: 'POST',
+            body: JSON.stringify(parameter)
+        })).json();
+        return res;
+    }
+
     async addParameter(parameter) {
         const res = await (await fetch(Config.baseUrl + '/parameter/add', {
             headers: { "Content-Type": "application/json" },
