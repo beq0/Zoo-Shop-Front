@@ -6,6 +6,8 @@
     import {ProductService} from "../services/product.service";
     import { ParameterService } from "../services/parameter.service";
     import { onMount } from 'svelte';
+    import { navigate } from "svelte-routing";
+
     
     export let showToolbar;
 
@@ -37,6 +39,16 @@
     let sellModalSubmited = false;
     let toDeleteId = null, deleteModalShow = false, deleteModalSubmited = false, indexOfProductToDelete = null;
 
+    if(DeviceDetectorService.isBrowser) {
+        let url = new URL(window.location.href);
+        filterCode = url.searchParams.get('code') || '';
+        filterName = url.searchParams.get('name') || '';
+        filterType = url.searchParams.get('type') || '';
+        filterStartPrice = parseInt(url.searchParams.get('start')) || null;
+        filterEndPrice = parseInt(url.searchParams.get('end')) || null;
+        showToolbar = filterCode || filterName || filterType || filterEndPrice || filterStartPrice;
+    }
+
     let products = [], allProducts = [];
     onMount(async () => {
         allProducts = await productService.getProducts();
@@ -44,6 +56,9 @@
         products = allProducts;
 
         initializeParameters();
+        if(showToolbar) {
+            filterProducts();
+        }
     });
 
     async function initializeParameters() {
@@ -78,7 +93,14 @@
                                             && prod.name.toLowerCase().includes(filterName.toLowerCase())
                                             && prod.productType.toLowerCase().includes(filterType.toLowerCase()) 
                                             && (filterStartPrice == null || prod.sellingPrice >= filterStartPrice)
-                                            && (filterEndPrice == null || prod.sellingPrice <= filterEndPrice))
+                                            && (filterEndPrice == null || prod.sellingPrice <= filterEndPrice));
+        let url = new URL(window.location.href);
+        url.searchParams.set('code', filterCode || '');
+        url.searchParams.set('name', filterName || '');
+        url.searchParams.set('type', filterType || '');
+        url.searchParams.set('start', filterStartPrice || '');
+        url.searchParams.set('end', filterEndPrice || '');
+        navigate(url.toString());
     }
 
     function onSell(product, i) {

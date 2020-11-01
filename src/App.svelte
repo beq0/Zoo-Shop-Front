@@ -16,8 +16,7 @@
     navigate("/home");
   }
 
-  let showToolbar = false;
-
+  let showToolbar;  
 </script>
 
 <Header bind:showToolbar={showToolbar}/>

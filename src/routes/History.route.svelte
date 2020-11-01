@@ -23,6 +23,11 @@
     if(DeviceDetectorService.isBrowser) {
         let url = new URL(window.location.href);
         marked = parseInt(url.searchParams.get('page')) || 1;
+        filterName = url.searchParams.get('name') || '';
+        filterType = url.searchParams.get('type') || '';
+        filterStartDate = url.searchParams.get('start') || null;
+        filterEndDate = url.searchParams.get('end') || null;
+        showToolbar = filterType || filterName;
     }
 
     let allProducts = [], productsMap = {};
@@ -33,8 +38,13 @@
         allProducts.forEach(product => {
             productsMap[product._id] = product;
         });
-
-        historyCount = await historyService.getCount();
+        let filters = {
+            productName: filterName,
+            productType: filterType,
+            sellDateFrom: filterStartDate,
+            sellDateTo: filterEndDate
+        }
+        historyCount = await historyService.getCount(filters);
         numOfPages = Math.ceil(historyCount/DEFAULT_PAGINATION_LIMIT);
         if(marked > numOfPages) marked = 1;
         pages = new Array(numOfPages);
@@ -43,6 +53,12 @@
     async function filterHistory() {
         if(!DeviceDetectorService.isBrowser) return;
         marked = 1;
+        let url = new URL(window.location.href);
+        url.searchParams.set('name', filterName || '');
+        url.searchParams.set('type', filterType || '');
+        url.searchParams.set('start', filterStartDate || '');
+        url.searchParams.set('end', filterEndDate || '');
+        navigate(url.toString());
         let filters = {
             productName: filterName,
             productType: filterType,

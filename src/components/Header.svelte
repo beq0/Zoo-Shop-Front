@@ -3,8 +3,8 @@
     import {DeviceDetectorService} from "../services/deviceDetector.service";
 
     let pathName = '/home';
-    export let showToolbar = false;
-
+    export let showToolbar;
+  
     $: {
         if(DeviceDetectorService.isBrowser) {
             pathName = window.location.pathname;
