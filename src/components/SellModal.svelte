@@ -92,7 +92,7 @@
     }
 
     $: {
-      console.log("hi",amountChanged, fullPriceChanged);
+      
       if (amountChanged) {
         console.log("asd");
         // if the amount is less than 0 or more than the available quantity, fix it

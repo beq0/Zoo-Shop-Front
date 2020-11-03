@@ -7,8 +7,9 @@
     import { ParameterService } from "../services/parameter.service";
     import { onMount } from 'svelte';
     import { navigate } from "svelte-routing";
+    import { ExcelGenerator } from "../utils/ExcelGenerator";
+    import { DateFormats } from "../utils/DateFormats"
 
-    
     export let showToolbar;
 
     const ParameterType = {
@@ -189,6 +190,24 @@
         return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     }
 
+    function downloadExcel() {
+        let content = [[]];
+        allProducts.forEach(prod => {
+            let currRow = [];
+            currRow.push(prod.code)
+            currRow.push(prod.name)
+            currRow.push(prod.productType)
+            currRow.push(prod.sellingPrice)
+            currRow.push(prod.originalPrice)
+            currRow.push(prod.quantity)
+            currRow.push(prod.quantityType)
+            currRow.push(DateFormats.formatDateTime(prod.lastChangeDate))
+            currRow.push(DateFormats.formatDateTime(prod.createDate))
+            content.push(currRow);
+        })
+        ExcelGenerator.saveWithOneSheet("პროდუქტები", "პროდუქტები", "ბ.გ.", "პროდუქტები", "პროდუქტები", columnNames, content)
+    }
+
 </script>
 
 <style>
@@ -282,13 +301,17 @@
             <th scope="col" style="width: 16%;">{column}</th>
         {/each}
         <th class="actionsTh" scope="col">
+        <div>
+            <!-- svelte-ignore a11y-missing-attribute -->
+            <input type="image" src="images/excel.png" width="27px" height="27px" on:click={downloadExcel}>
+        </div>
         <div class="leftTooltipIconDiv" style="margin-left: auto;">
-                <!-- svelte-ignore a11y-missing-attribute -->
-                <input type="image" src="images/add.jpg" width="27px" height="27px" on:click={()=>{
-                    isChange = false;
-                    showProductModal = true;
-                }}>
-            </div>
+            <!-- svelte-ignore a11y-missing-attribute -->
+            <input type="image" src="images/add.jpg" width="27px" height="27px" on:click={()=>{
+                isChange = false;
+                showProductModal = true;
+            }}>
+        </div>
         </th>
     </tr>
     </thead>
