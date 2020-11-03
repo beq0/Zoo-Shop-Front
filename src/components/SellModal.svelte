@@ -9,9 +9,11 @@
       WEIGHT: "წონითი"
     }
 
-    export let show = false, _id, productName = '', productType = '', amount = null, quantity = null,
+    export let show = false, _id, productCode = '', productName = '', productType = '', amount = null, quantity = null,
     quantityType = QuantityType.COUNT, submited = false, originalPrice = null, sellingPrice = null;
 
+    let amountChanged = false, fullPriceChanged = false, sellingPriceChanged = false;
+    let fullPrice = null;
     let showWarningModal = false, warningModalMessage = '';
     const date = new Date();
     let sellDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
@@ -49,6 +51,7 @@
         _id = null;
         productName = null;
         amount = null;
+        fullPrice = null;
         show = false;
     }
 
@@ -76,6 +79,7 @@
 
     function addSellHistory() {
       let history = {
+        productCode,
         productId: _id,
         productName,
         productType,
@@ -88,22 +92,52 @@
     }
 
     $: {
-      // if the amount is less than 0 or more than the available quantity, fix it
-      if (amount < 0) {
+      console.log("hi",amountChanged, fullPriceChanged);
+      if (amountChanged) {
+        console.log("asd");
+        // if the amount is less than 0 or more than the available quantity, fix it
+        if (amount < 0) {
           amount = 0;
-      } else if ((quantity || quantity == 0) && quantity - amount <= 0) {
+        } else if ((quantity || quantity == 0) && quantity - amount <= 0) {
           amount = quantity;
+        }
+
+        // if the amount is not the integer and the product's quantity type is COUNT, floor the amount
+        if (isCountType() && !isInt(amount)) {
+          amount = Math.floor(amount);
+        }
+        
+        // if the amount's decimal points are more than 3, fix it to 3
+        if (!isCountType() && getDecimalPoints(amount) > 3) {
+          amount = amount.toFixed(3);
+        }
+        fullPrice = getFullPrice();
+        amountChanged = false;
+        console.log(fullPrice, amount);
       }
 
-      // if the amount is not the integer and the product's quantity type is COUNT, floor the amount
-      if (isCountType() && !isInt(amount)) {
-        amount = Math.floor(amount);
+      if (fullPriceChanged) {
+        console.log("dsa");
+        amount = getAmount();
+        fullPriceChanged = false;
+      }
+
+      if (sellingPriceChanged) {
+        fullPrice = getFullPrice();
+        sellingPriceChanged = false;
       }
       
-      // if the amount's decimal points are more than 3, fix it to 3
-      if (!isCountType() && getDecimalPoints(amount) > 3) {
-        amount = amount.toFixed(3);
-      }
+    }
+
+    function getFullPrice() {
+      return (amount * sellingPrice).toFixed(2);
+    }
+
+    function getAmount() {
+      let result = fullPrice / sellingPrice;
+      if (isCountType()) result = Math.floor(result);
+      else result = result.toFixed(3);
+      return result;
     }
 
   </script>
@@ -129,16 +163,23 @@
         <h5 class="modal-title">პროდუქტ {productName}(ი)ს გაყიდვა</h5>
         <hr>
         <div class="form-group">
-            <div>რაოდენობა:&emsp;</div>
-            <input type="number" class="form-control" id="amount" bind:value={amount} placeholder={isCountType() ? 'ცალობითი რაოდენობა' : 'წონითი რაოდენობა'}>
+          <div>რაოდენობა:&emsp;</div>
+          <input type="number" class="form-control" id="amount" bind:value={amount} on:input={() => {amountChanged = true}} placeholder={isCountType() ? 'ცალობითი რაოდენობა' : 'წონითი რაოდენობა'}>
         </div>
+
         <div class="form-group">
-            <div>ფასი:&emsp;</div>
-            <input type="number" class="form-control" id="amount" bind:value={sellingPrice} placeholder={amount}>
+          <div>ჯამური ფასი:&emsp;</div>
+          <input type="number" class="form-control" id="amount" bind:value={fullPrice} on:input={() => {fullPriceChanged = true}}>
         </div>
+
         <div class="form-group">
-            <div>თარიღი:&emsp;</div>
-            <input type="date" class="form-control" id="amount" bind:value={sellDate} placeholder={amount}>
+          <div>ფასი:&emsp;</div>
+          <input type="number" class="form-control" id="amount" bind:value={sellingPrice} on:input={() => {sellingPriceChanged = true}}>
+        </div>
+        
+        <div class="form-group">
+          <div>თარიღი:&emsp;</div>
+          <input type="date" class="form-control" id="amount" bind:value={sellDate}>
         </div>
         <hr>
         <div>

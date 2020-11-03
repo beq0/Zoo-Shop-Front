@@ -28,7 +28,7 @@
     
     let productService = ProductService.getInstance(), parameterService = ParameterService.getInstance();
 
-    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'რაოდენობა', 'რაოდ. ტიპი'];
+    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'რაოდენობა', 'რაოდ. ტიპი', 'განახლების თარიღი', 'შექმნის თარიღი'];
     let filterCode = '', filterName='', filterType='', filterStartPrice=null, filterEndPrice=null;
     let showProductModal = false, isChange = false, showSellModal = false;
     let _id, productCode = null, name = null, productType = ProductType[0], sellingPrice = null, 
@@ -52,7 +52,6 @@
     let products = [], allProducts = [];
     onMount(async () => {
         allProducts = await productService.getProducts();
-        allProducts.reverse();
         products = allProducts;
 
         initializeParameters();
@@ -105,7 +104,9 @@
 
     function onSell(product, i) {
         _id = product._id;
+        productCode = product.code;
         name = product.name;
+        productType = product.productType;
         quantity = product.quantity;
         quantityType = product.quantityType;
         sellingPrice = product.sellingPrice;
@@ -143,9 +144,11 @@
                 sellingPrice,
                 originalPrice,
                 quantity,
-                quantityType
+                quantityType,
+                lastChangeDate: new Date()
             }
             if (!isChange) {
+                changedProduct['createDate'] = new Date();
                 products = [changedProduct, ...products];
                 allProducts = [changedProduct, ...allProducts];
             } else {
@@ -157,6 +160,7 @@
                 products[indexOfSelectedProduct].originalPrice = changedProduct.originalPrice;
                 products[indexOfSelectedProduct].quantity = changedProduct.quantity;
                 products[indexOfSelectedProduct].quantityType = changedProduct.quantityType;
+                products[indexOfSelectedProduct].lastChangeDate = new Date();
             }
             productCode = null;
             name = null;
@@ -178,6 +182,11 @@
         products = [...products.slice(0, indexOfProductToDelete), ...products.slice(indexOfProductToDelete + 1)];
         allProducts = allProducts.filter(prod => prod._id != toDeleteId);
         deleteModalSubmited = false;
+    }
+
+    function getDateString(date) {
+        date = new Date(date);
+        return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     }
 
 </script>
@@ -294,6 +303,8 @@
             <td>{(Number.isInteger(product.quantity) ? product.quantity : product.quantity.toFixed(product.quantityType == QuanitityType.WEIGHT ? 3 : 2)) +
                  (product.quantityType == QuanitityType.WEIGHT ? " კგ." : " ც.")}</td>
             <td>{product.quantityType}</td>
+            <td>{getDateString(product.lastChangeDate)}</td>
+            <td>{getDateString(product.createDate)}</td>
             <td style="padding-right: 5px;">
                 <div class="actionButtonsDiv">
                     <div class="leftTooltipIconDiv" data-tooltip="გაყიდვა" data-tooltip-location="left" style="margin-right: 10px;">
@@ -341,6 +352,7 @@
 <SellModal
 bind:show={showSellModal}
 bind:_id={_id}
+bind:productCode={productCode}
 bind:productName={name}
 bind:productType={productType}
 bind:amount={amountToSell}

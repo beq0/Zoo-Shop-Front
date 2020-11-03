@@ -24,7 +24,6 @@
     let parameters = [], allParameters = [];
     onMount(async () => {
         allParameters = await parameterService.findParameters();
-        allParameters.reverse();
         parameters = allParameters;
     });
 
