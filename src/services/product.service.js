@@ -40,7 +40,7 @@ export class ProductService {
     }
 
     async findProducts(filters) {
-        return (await fetch(Config.baseUrl + '/product/findProducts', {
+        return (await fetch(Config.baseUrl + '/api/product/findProducts', {
             headers: { "Content-Type": "application/json" },
             method: 'POST',
             body: JSON.stringify(filters)

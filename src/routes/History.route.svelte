@@ -210,7 +210,7 @@
             </button>
         </li>
         {#each pages as ignored, i}
-            {#if marked - 1 - PAGES_BEFORE_AND_AFTER < i && i < marked + PAGES_BEFORE_AND_AFTER}
+            {#if marked - 2 - PAGES_BEFORE_AND_AFTER < i && i < marked + PAGES_BEFORE_AND_AFTER}
                 <li class={"page-item " + (marked===i+1 ? "active" : "")}>
                     <button class="page-link" on:click={()=>{pageChanged(i+1)}}>
                         {i+1}

@@ -1,7 +1,9 @@
 import { FileSaverUtils } from "./FileSaver";
 
 export class ExcelGenerator {
+    
     constructor() {
+
     }
 
     static saveWithOneSheet(title, subject, author, sheetName, fileName, columnNames, content) {

@@ -55,7 +55,6 @@
             startLastChangeDate: filterStartLastChangeDate,
             endLastChangeDate: filterEndlastChangeDate
         }
-        console.log(filters);
         let filteredProducts = await productService.findProducts(filters)
         let content = [[]];
         filteredProducts.forEach(prod => {
