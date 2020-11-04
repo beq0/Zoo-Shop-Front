@@ -22,7 +22,7 @@
   export let show;
   export let title = 'დამატება';
   export let _id, productCode = null, name = "", productType = ProductType[0], 
-          sellingPrice = null, originalPrice = null, quantity = null, quantityType = QuanitityType.COUNT;
+          sellingPrice = null, originalPrice = null, quantity = null, quantityType = QuanitityType.COUNT, official = true;
   export let submited = false;
   export let isChange;
 
@@ -58,8 +58,10 @@
       sellingPrice,
       originalPrice,
       quantity,
-      quantityType
+      quantityType,
+      official
     }
+    console.log(updatedProduct);
     if (name && productType && quantity != null && sellingPrice != null && originalPrice != null) {
       let res = null
       if (!isChange) res = await productService.addProduct(updatedProduct);
@@ -85,10 +87,14 @@
     originalPrice = null;
     quantity = null;
     quantityType = QuanitityType.COUNT; 
+    official = true;
   }
 
-  
-  
+  $: {
+    official;
+    console.log(official);
+  }
+
 </script>
 
 <style>
@@ -103,6 +109,11 @@
     width: 300px;
   }
 
+  #official {
+    height: 17px;
+    box-shadow: none;
+  }
+
 </style>
 
 {#if show}
@@ -113,12 +124,14 @@
     <hr>
     <div class="form-group">
       <div>კოდი:&emsp;</div>
-      <input type="text" class="form-control" id="productCode" bind:value={productCode}>
+      <input type="text" class="form-control" bind:value={productCode}>
     </div>
+    
     <div class="form-group">
       <div>სახელი:&emsp;</div>
-      <input type="text" class="form-control" id="name" bind:value={name}>
+      <input type="text" class="form-control" bind:value={name}>
     </div>
+    
     <div class="form-group">
       <div>ტიპი:&emsp;</div>
       <select class="form-control" bind:value={productType}>
@@ -127,18 +140,22 @@
         {/each}
       </select>
     </div>
+    
     <div class="form-group">
       <div>გაყიდვის&nbsp;ფასი:&emsp;</div>
-      <input type="number" class="form-control" id="sellPrice" bind:value={sellingPrice}>
+      <input type="number" class="form-control" bind:value={sellingPrice}>
     </div>
+    
     <div class="form-group">
       <div>ყიდვის&nbsp;ფასი:&emsp;</div>
-      <input type="number" class="form-control" id="buyPrice" bind:value={originalPrice}>
+      <input type="number" class="form-control" bind:value={originalPrice}>
     </div>
+    
     <div class="form-group">
       <div>რაოდენობა:&emsp;</div>
-      <input type="number" class="form-control" id="amount" bind:value={quantity}>
+      <input type="number" class="form-control" bind:value={quantity}>
     </div>
+    
     <div class="form-group">
       <div>რაოდ. ტიპი:&emsp;</div>
       <select class="form-control" bind:value={quantityType}>
@@ -146,6 +163,11 @@
         <option>{quantityType}</option>
         {/each}
       </select>
+    </div>
+    
+    <div class="form-group">
+      <div>ოფიციალური:&emsp;</div>
+      <input type="checkbox" class="form-control" id="official" bind:checked={official}>
     </div>
     <hr>
     <div>

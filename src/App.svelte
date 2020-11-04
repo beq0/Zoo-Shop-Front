@@ -3,7 +3,6 @@
   import { DeviceDetectorService } from "./services/deviceDetector.service";
   import * as Config from "./config";
 
-  import TestRoute from "./routes/Test.route.svelte"
   import Header from "./components/Header.svelte"
   import Home from "./routes/Home.route.svelte"
   import Product from "./routes/Product.route.svelte"
@@ -16,17 +15,20 @@
     navigate("/home");
   }
 
-  let showToolbar;  
+  let show;
+
 </script>
 
-<Header bind:showToolbar={showToolbar}/>
+<Header 
+bind:show={show}
+/>
 
 <div>
   <Router url="{url}">
     <Route path="home" component={Home}></Route>
-    <Route path="products" component={Product} bind:showToolbar={showToolbar}></Route>
-    <Route path="history" component={History} bind:showToolbar={showToolbar}></Route>
-    <Route path="parameter" component={Parameter} bind:showToolbar={showToolbar}></Route>
+    <Route path="products" component={Product} bind:show={show}></Route>
+    <Route path="history" component={History} bind:show={show}></Route>
+    <Route path="parameter" component={Parameter} bind:show={show}></Route>
   </Router>  
 </div>
 

@@ -8,10 +8,8 @@
     import { ParameterService } from "../services/parameter.service";
     import { onMount } from 'svelte';
     import { navigate } from "svelte-routing";
-    import { ExcelGenerator } from "../utils/ExcelGenerator";
-    import { DateFormats } from "../utils/DateFormats"
 
-    export let showToolbar;
+    export let show = {};
 
     const ParameterType = {
         INTEGER: "რიცხვი",
@@ -32,9 +30,9 @@
 
     let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'რაოდენობა', 'რაოდ. ტიპი', 'განახლების თარიღი', 'შექმნის თარიღი'];
     let filterCode = '', filterName='', filterType='', filterStartPrice=null, filterEndPrice=null;
-    let showProductModal = false, isChange = false, showSellModal = false, showProductReport = false;
+    let showProductModal = false, isChange = false, showSellModal = false;
     let _id, productCode = null, name = null, productType = ProductType[0], sellingPrice = null, 
-            originalPrice = null, quantity = null, quantityType = QuanitityType.COUNT;
+            originalPrice = null, quantity = null, quantityType = QuanitityType.COUNT, official = null;
     let productModalSubmited = false;
     let indexOfSelectedProduct;
     let amountToSell = null;
@@ -48,7 +46,7 @@
         filterType = url.searchParams.get('type') || '';
         filterStartPrice = parseInt(url.searchParams.get('start')) || null;
         filterEndPrice = parseInt(url.searchParams.get('end')) || null;
-        showToolbar = filterCode || filterName || filterType || filterEndPrice || filterStartPrice;
+        show.showToolbar = filterCode || filterName || filterType || filterEndPrice || filterStartPrice;
     }
 
     let products = [], allProducts = [];
@@ -57,7 +55,7 @@
         products = allProducts;
 
         initializeParameters();
-        if(showToolbar) {
+        if(show.showToolbar) {
             filterProducts();
         }
     });
@@ -76,6 +74,7 @@
         originalPrice = product.originalPrice;
         quantity = product.quantity;
         quantityType = product.quantityType;
+        official = product.official;
         showProductModal = true;
         isChange = true;
         indexOfSelectedProduct = i;
@@ -113,6 +112,7 @@
         quantityType = product.quantityType;
         sellingPrice = product.sellingPrice;
         originalPrice = product.originalPrice;
+        official = product.official;
         indexOfSelectedProduct = i;
         showSellModal = true;
     }
@@ -191,24 +191,6 @@
         return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     }
 
-    function downloadExcel() {
-        let content = [[]];
-        allProducts.forEach(prod => {
-            let currRow = [];
-            currRow.push(prod.code)
-            currRow.push(prod.name)
-            currRow.push(prod.productType)
-            currRow.push(prod.sellingPrice)
-            currRow.push(prod.originalPrice)
-            currRow.push(prod.quantity)
-            currRow.push(prod.quantityType)
-            currRow.push(DateFormats.formatDateTime(prod.lastChangeDate))
-            currRow.push(DateFormats.formatDateTime(prod.createDate))
-            content.push(currRow);
-        })
-        ExcelGenerator.saveWithOneSheet("პროდუქტები", "პროდუქტები", "ბ.გ.", "პროდუქტები", "პროდუქტები", columnNames, content)
-    }
-
 </script>
 
 <style>
@@ -254,7 +236,7 @@
     }
 </style>
 
-{#if showToolbar}
+{#if show.showToolbar}
 <div class="toolbar" id="toolbar">
     <div class="form-group toolbar-item toolbar">
         <span>კოდი:&emsp;</span>
@@ -302,17 +284,13 @@
             <th scope="col" style="width: 16%;">{column}</th>
         {/each}
         <th class="actionsTh" scope="col">
-        <div>
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <input type="image" src="images/excel.png" width="27px" height="27px" on:click={() => {showProductReport = true}}>
-        </div>
-        <div class="leftTooltipIconDiv" style="margin-left: auto;">
-            <!-- svelte-ignore a11y-missing-attribute -->
-            <input type="image" src="images/add.jpg" width="27px" height="27px" on:click={()=>{
-                isChange = false;
-                showProductModal = true;
-            }}>
-        </div>
+            <div class="leftTooltipIconDiv" style="margin-left: auto;">
+                <!-- svelte-ignore a11y-missing-attribute -->
+                <input type="image" src="images/add.jpg" width="27px" height="27px" on:click={()=>{
+                    isChange = false;
+                    showProductModal = true;
+                }}>
+            </div>
         </th>
     </tr>
     </thead>
@@ -359,19 +337,21 @@
     </tbody>
 </table>
 
-<ProductModal bind:show={showProductModal}
-              bind:isChange={isChange}
-              title={isChange ? 'რედაქტირება' : 'დამატება'}
-              bind:_id={_id}
-              bind:productCode={productCode}
-              bind:name={name}
-              bind:productType={productType} 
-              bind:sellingPrice={sellingPrice} 
-              bind:originalPrice={originalPrice}
-              bind:quantity={quantity}
-              bind:quantityType={quantityType}
-              bind:submited={productModalSubmited}
-              />
+<ProductModal 
+bind:show={showProductModal}
+bind:isChange={isChange}
+title={isChange ? 'რედაქტირება' : 'დამატება'}
+bind:_id={_id}
+bind:productCode={productCode}
+bind:name={name}
+bind:productType={productType} 
+bind:sellingPrice={sellingPrice} 
+bind:originalPrice={originalPrice}
+bind:quantity={quantity}
+bind:quantityType={quantityType}
+bind:official={official}
+bind:submited={productModalSubmited}
+/>
 
 <SellModal
 bind:show={showSellModal}
@@ -385,6 +365,7 @@ bind:quantity={quantity}
 sellingPrice={sellingPrice}
 bind:originalPrice={originalPrice}
 bind:quantityType={quantityType}
+bind:official={official}
 />
 
 <DeleteModal
@@ -395,5 +376,5 @@ bind:service={productService}
 />
 
 <ProductReport
-bind:show={showProductReport}
+bind:show={show.showProductReport}
 />

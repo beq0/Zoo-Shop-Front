@@ -3,7 +3,7 @@
     import {DeviceDetectorService} from "../services/deviceDetector.service";
 
     let pathName = '/home';
-    export let showToolbar;
+    export let show = {};
   
     $: {
         if(DeviceDetectorService.isBrowser) {
@@ -74,9 +74,24 @@
         <div>
             <!-- svelte-ignore a11y-missing-attribute -->
             <input class="filterImage" type="image" 
-            src="images/showFilter.png" width="27px" height="27px" on:click={()=>showToolbar=!showToolbar}>
+            src="images/showFilter.png" width="27px" height="27px" on:click={()=>show.showToolbar=!show.showToolbar}>
         </div>
     </li>
     {/if}
+
+    {#if pathName === '/products' || pathName === '/history'}
+    <li>
+        <div>
+            <!-- svelte-ignore a11y-missing-attribute -->
+            <input class="filterImage" type="image" 
+            src="images/excel.png" width="27px" height="27px" on:click={()=> {
+                console.log(pathName, show.showProductReport)
+                if (pathName === '/products') show.showProductReport = true;
+                if (pathName === '/history') show.showHistoryReport = true;
+            }}>
+        </div>
+    </li>
+    {/if}
+
     </ul>
 </div>

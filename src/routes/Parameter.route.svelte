@@ -4,7 +4,7 @@
     import DeleteModal from "../components/DeleteModal.svelte"
     import { onMount } from 'svelte';
     
-    export let showToolbar;
+    export let show = {};
 
     const ParameterType = {
         INTEGER: "რიცხვი",
@@ -144,7 +144,7 @@
     }
 </style>
 
-{#if showToolbar}
+{#if show.showToolbar}
 <div class="toolbar" id="toolbar">
     <div class="form-group toolbar-item toolbar">
         <span>სახელი:&emsp;</span>

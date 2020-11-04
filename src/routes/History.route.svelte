@@ -3,17 +3,17 @@
     import { navigate } from "svelte-routing";
     import {HistoryService} from "../services/history.service";
     import { onMount } from 'svelte';
-    import { DateFormats } from "../utils/DateFormats"
+    import { DateFormats } from "../utils/DateFormats";
+    import HistoryReport from "../components/reports/HistoryReport.svelte";
     
-    export let showToolbar;
+    export let show = {};
 
     const DEFAULT_PAGINATION_LIMIT = 5;
     const PAGES_BEFORE_AND_AFTER = 4;
     
     const historyService = HistoryService.getInstance();
 
-
-    let filterName='', filterType='', filterStartDate=null, filterEndDate=null;
+    let filterCode = '', filterName='', filterType='', filterStartDate=null, filterEndDate=null;
     let columnNames = ['სახელი', 'ტიპი', 'თარიღი', 'რაოდენობა', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'მოგება'];
     let historyCount, numOfPages;
     let marked;
@@ -26,7 +26,7 @@
         filterType = url.searchParams.get('type') || '';
         filterStartDate = url.searchParams.get('start') || null;
         filterEndDate = url.searchParams.get('end') || null;
-        showToolbar = filterType || filterName;
+        show.showToolbar = filterType || filterName;
     }
 
     let histories = [], allHistories = [];
@@ -68,6 +68,7 @@
     async function getFilteredData() {
         if(!DeviceDetectorService.isBrowser) return;
         let filters = {
+            productCode: filterCode,
             productName: filterName,
             productType: filterType,
             sellDateFrom: filterStartDate,
@@ -138,8 +139,13 @@
     }
 </style>
 
-{#if showToolbar}
+{#if show.showToolbar}
 <div class="toolbar" id="toolbar">
+    <div class="form-group toolbar-item toolbar">
+        <span>კოდი:&emsp;</span>
+        <input type="text" class="form-control" bind:value={filterCode}>
+    </div>
+
     <div class="form-group toolbar-item toolbar">
         <span>სახელი:&emsp;</span>
         <input type="text" class="form-control" bind:value={filterName}>
@@ -230,3 +236,7 @@
         </li>
     </ul>
 </nav>
+
+<HistoryReport
+bind:show={show.showHistoryReport}
+/>
