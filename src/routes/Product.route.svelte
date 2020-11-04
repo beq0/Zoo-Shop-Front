@@ -3,6 +3,7 @@
     import ProductModal from "../components/ProductModal.svelte";
     import SellModal from "../components/SellModal.svelte";
     import DeleteModal from "../components/DeleteModal.svelte";
+    import ProductReport from "../components/reports/ProductReport.svelte"
     import {ProductService} from "../services/product.service";
     import { ParameterService } from "../services/parameter.service";
     import { onMount } from 'svelte';
@@ -31,7 +32,7 @@
 
     let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'რაოდენობა', 'რაოდ. ტიპი', 'განახლების თარიღი', 'შექმნის თარიღი'];
     let filterCode = '', filterName='', filterType='', filterStartPrice=null, filterEndPrice=null;
-    let showProductModal = false, isChange = false, showSellModal = false;
+    let showProductModal = false, isChange = false, showSellModal = false, showProductReport = false;
     let _id, productCode = null, name = null, productType = ProductType[0], sellingPrice = null, 
             originalPrice = null, quantity = null, quantityType = QuanitityType.COUNT;
     let productModalSubmited = false;
@@ -303,7 +304,7 @@
         <th class="actionsTh" scope="col">
         <div>
             <!-- svelte-ignore a11y-missing-attribute -->
-            <input type="image" src="images/excel.png" width="27px" height="27px" on:click={downloadExcel}>
+            <input type="image" src="images/excel.png" width="27px" height="27px" on:click={() => {showProductReport = true}}>
         </div>
         <div class="leftTooltipIconDiv" style="margin-left: auto;">
             <!-- svelte-ignore a11y-missing-attribute -->
@@ -391,4 +392,8 @@ bind:show={deleteModalShow}
 bind:submited={deleteModalSubmited}
 bind:toDeleteId={toDeleteId}
 bind:service={productService}
+/>
+
+<ProductReport
+bind:show={showProductReport}
 />
