@@ -2,8 +2,8 @@
     import {DeviceDetectorService} from "../services/deviceDetector.service";
     import { navigate } from "svelte-routing";
     import {HistoryService} from "../services/history.service";
-    import {ProductService} from "../services/product.service";
     import { onMount } from 'svelte';
+    import { DateFormats } from "../utils/DateFormats"
     
     export let showToolbar;
 
@@ -11,7 +11,6 @@
     const PAGES_BEFORE_AND_AFTER = 4;
     
     const historyService = HistoryService.getInstance();
-    const productService = ProductService.getInstance();
 
 
     let filterName='', filterType='', filterStartDate=null, filterEndDate=null;
@@ -30,14 +29,9 @@
         showToolbar = filterType || filterName;
     }
 
-    let allProducts = [], productsMap = {};
     let histories = [], allHistories = [];
     
     onMount(async () => {
-        allProducts = await productService.getProducts();
-        allProducts.forEach(product => {
-            productsMap[product._id] = product;
-        });
         let filters = {
             productName: filterName,
             productType: filterType,
@@ -193,7 +187,7 @@
         <tr>
             <td>{history.productName}</td>
             <td>{history.productType}</td>
-            <td>{(history.sellDate.getMonth() + 1) + "/" + history.sellDate.getDate() + "/" +  history.sellDate.getFullYear()}</td>
+            <td>{DateFormats.formatDate(history.sellDate)}</td>
             <td>{Number.isInteger(history.amount) ? history.amount : history.amount.toFixed(3)}</td>
             <td style="text-align: end;">{history.sellingPrice.toFixed(2)} ₾</td>
             <td style="text-align: end;">{history.originalPrice.toFixed(2)} ₾</td>

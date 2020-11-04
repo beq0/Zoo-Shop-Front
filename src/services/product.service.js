@@ -38,4 +38,12 @@ export class ProductService {
             method: 'DELETE'
         })).json();
     }
+
+    async findProducts(filters) {
+        return (await fetch(Config.baseUrl + '/product/findProducts', {
+            headers: { "Content-Type": "application/json" },
+            method: 'POST',
+            body: JSON.stringify(filters)
+        })).json();
+    }
 }

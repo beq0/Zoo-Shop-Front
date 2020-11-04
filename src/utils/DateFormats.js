@@ -7,4 +7,8 @@ export class DateFormats {
     static formatDateTime(date) {
         return moment(date).format('DD-MM-YYYY HH:mm:ss')
     }
+
+    static formatDate(date) {
+        return moment(date).format('DD-MM-YYYY')
+    }
 }
