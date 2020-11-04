@@ -10,18 +10,19 @@
 
     const DEFAULT_PAGINATION_LIMIT = 5;
     const PAGES_BEFORE_AND_AFTER = 4;
+    const HOUR_IN_MILISECONDS = 36e+5;
     
+    const today = new Date();
     const historyService = HistoryService.getInstance();
 
     let filterCode = '', filterName='', filterType='', filterStartDate=null, filterEndDate=null;
     let columnNames = ['სახელი', 'ტიპი', 'თარიღი', 'რაოდენობა', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'მოგება'];
-    let historyCount, numOfPages;
-    let marked;
-    let pages = [];
+    let marked = DateFormats.formatDate(today);
+    let pages = [DateFormats.formatDate(new Date(today.getTime() - 48 * HOUR_IN_MILISECONDS)), DateFormats.formatDate(new Date(today.getTime() - 24 * HOUR_IN_MILISECONDS)), DateFormats.formatDate(today)];
 
     if(DeviceDetectorService.isBrowser) {
         let url = new URL(window.location.href);
-        marked = parseInt(url.searchParams.get('page')) || 1;
+        marked = url.searchParams.get('date') || DateFormats.formatDate(today);
         filterName = url.searchParams.get('name') || '';
         filterType = url.searchParams.get('type') || '';
         filterStartDate = url.searchParams.get('start') || null;
@@ -32,21 +33,12 @@
     let histories = [], allHistories = [];
     
     onMount(async () => {
-        let filters = {
-            productName: filterName,
-            productType: filterType,
-            sellDateFrom: filterStartDate,
-            sellDateTo: filterEndDate
-        }
-        historyCount = await historyService.getCount(filters);
-        numOfPages = Math.ceil(historyCount/DEFAULT_PAGINATION_LIMIT);
-        if(marked > numOfPages) marked = 1;
-        pages = new Array(numOfPages);
+        
     })
 
     async function filterHistory() {
         if(!DeviceDetectorService.isBrowser) return;
-        marked = 1;
+        marked = DateFormats.formatDate(today);
         let url = new URL(window.location.href);
         url.searchParams.set('name', filterName || '');
         url.searchParams.set('type', filterType || '');
@@ -59,22 +51,19 @@
             sellDateFrom: filterStartDate,
             sellDateTo: filterEndDate
         }
-        historyCount = await historyService.getCount(filters);
-        numOfPages = Math.ceil(historyCount/DEFAULT_PAGINATION_LIMIT);
-        pages = new Array(numOfPages);
-        getFilteredData();
+        getFilteredData(true);
     }
 
-    async function getFilteredData() {
+    async function getFilteredData(state) {
         if(!DeviceDetectorService.isBrowser) return;
         let filters = {
             productCode: filterCode,
             productName: filterName,
             productType: filterType,
-            sellDateFrom: filterStartDate,
-            sellDateTo: filterEndDate
+            sellDateFrom: (state ? filterStartDate : DateFormats.toDate(marked)),
+            sellDateTo: (state ? filterEndDate : new Date(DateFormats.toDate(marked).getTime() + 24 * HOUR_IN_MILISECONDS))
         }
-        allHistories = await historyService.findHistories(filters, marked, DEFAULT_PAGINATION_LIMIT, 1);
+        allHistories = await historyService.findHistories(filters, 0, 0, 0);
         allHistories.forEach(h => {
             h.sellDate = new Date(h.sellDate);
         });
@@ -85,17 +74,27 @@
         filterName='', filterType='', filterStartDate=null, filterEndDate=null;
     }
 
-    function pageChanged(i) {
-        marked = i;
+    function onBack() {
+        marked = pages[1];
+    }
+
+    function onNext() {
+        if(marked != DateFormats.formatDate(today)) marked = pages[3];
     }
 
     $: {
         if(DeviceDetectorService.isBrowser) {
             let url = new URL(window.location.href);
-            url.searchParams.set('page', marked);
+            url.searchParams.set('date', marked);
             navigate(url.toString());
         }
-        getFilteredData();
+        let tmp = DateFormats.toDate(marked);
+        pages = [DateFormats.formatDate(new Date(tmp.getTime() - 48 * HOUR_IN_MILISECONDS)), 
+                DateFormats.formatDate(new Date(tmp.getTime() - 24 * HOUR_IN_MILISECONDS)), 
+                DateFormats.formatDate(tmp)];
+        if(new Date(tmp.getTime() + 24 * HOUR_IN_MILISECONDS) <= today) pages.push(DateFormats.formatDate(new Date(tmp.getTime() + 24 * HOUR_IN_MILISECONDS)));
+        if(new Date(tmp.getTime() + 48 * HOUR_IN_MILISECONDS) <= today) pages.push(DateFormats.formatDate(new Date(tmp.getTime() + 48 * HOUR_IN_MILISECONDS)));
+        getFilteredData(false);
     }
 </script>
 
@@ -206,32 +205,20 @@
 <nav aria-label="...">
     <ul class="pagination justify-content-center">
         <li class="page-item">
-            <button class="page-link" on:click={()=>{marked=1;}}>
-                &lt;&lt;
-            </button>
-        </li>
-        <li class="page-item">
-            <button class="page-link" on:click={()=>{if(marked > 1) marked--;}}>
+            <button class="page-link" on:click={onBack}>
                 უკან
             </button>
         </li>
-        {#each pages as ignored, i}
-            {#if marked - 2 - PAGES_BEFORE_AND_AFTER < i && i < marked + PAGES_BEFORE_AND_AFTER}
-                <li class={"page-item " + (marked===i+1 ? "active" : "")}>
-                    <button class="page-link" on:click={()=>{pageChanged(i+1)}}>
-                        {i+1}
+        {#each pages as page, i}
+                <li class={"page-item " + (marked===page ? "active" : "")}>
+                    <button class="page-link" on:click={()=>{marked = page}}>
+                        {page}
                     </button>
                 </li>
-            {/if}
         {/each}
         <li class="page-item">
-            <button class="page-link" on:click={()=>{if(marked < numOfPages) marked++;}}>
+            <button class="page-link" on:click={onNext}>
                 წინ
-            </button>
-        </li>
-        <li class="page-item">
-            <button class="page-link" on:click={()=>{marked=numOfPages;}}>
-                &gt;&gt;
             </button>
         </li>
     </ul>
