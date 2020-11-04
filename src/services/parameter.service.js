@@ -10,7 +10,7 @@ export class ParameterService {
     }
 
     async findParameters() {
-        return (await fetch(Config.baseUrl + '/parameter/findParameters', {
+        return (await fetch(Config.baseUrl + '/api/parameter/findParameters', {
             method: 'GET'
         })).json();
     }
@@ -21,7 +21,7 @@ export class ParameterService {
             parameterType,
             defaultValue
         }
-        const res = await (await fetch(Config.baseUrl + '/parameter/getParameter', {
+        const res = await (await fetch(Config.baseUrl + '/api/parameter/getParameter', {
             headers: { "Content-Type": "application/json" },
             method: 'POST',
             body: JSON.stringify(parameter)
@@ -30,7 +30,7 @@ export class ParameterService {
     }
 
     async addParameter(parameter) {
-        const res = await (await fetch(Config.baseUrl + '/parameter/add', {
+        const res = await (await fetch(Config.baseUrl + '/api/parameter/add', {
             headers: { "Content-Type": "application/json" },
             method: 'POST',
             body: JSON.stringify(parameter)
@@ -39,7 +39,7 @@ export class ParameterService {
     }
 
     async changeParameter(parameter) {
-        const res = await (await fetch(Config.baseUrl + '/parameter/change', {
+        const res = await (await fetch(Config.baseUrl + '/api/parameter/change', {
             headers: { "Content-Type": "application/json" },
             method: 'POST',
             body: JSON.stringify(parameter)
@@ -48,7 +48,7 @@ export class ParameterService {
     }
 
     async delete(parameterId) {
-        return (await fetch(Config.baseUrl + '/parameter/delete/' + parameterId, {
+        return (await fetch(Config.baseUrl + '/api/parameter/delete/' + parameterId, {
             method: 'DELETE'
         })).json();
     }

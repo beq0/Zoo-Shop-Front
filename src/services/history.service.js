@@ -1,6 +1,7 @@
 import * as Config from '../config.json';
 
 export class HistoryService {
+    
     constructor() {
 
     }
@@ -10,13 +11,13 @@ export class HistoryService {
     }
 
     async getHistories() {
-        return (await fetch(Config.baseUrl + '/history/findAll', {
+        return (await fetch(Config.baseUrl + '/api/history/findAll', {
             method: 'GET'
         })).json();
     }
 
     addHistory(history) {
-        fetch(Config.baseUrl + '/history/add', {
+        fetch(Config.baseUrl + '/api/history/add', {
             headers: { "Content-Type": "application/json" },
             method: 'POST',
             body: JSON.stringify(history)
@@ -25,7 +26,7 @@ export class HistoryService {
 
     // pass 1 for histories with pagination, or 0 otherwise
     async findHistories(filters, page, limit, isPagination) {
-        return (await fetch(Config.baseUrl + '/history/findHistories/' + page + '/' + limit + '/' + isPagination, {
+        return (await fetch(Config.baseUrl + '/api/history/findHistories/' + page + '/' + limit + '/' + isPagination, {
             headers: { "Content-Type": "application/json" },
             method: 'POST',
             body: JSON.stringify(filters)
@@ -33,7 +34,7 @@ export class HistoryService {
     }
 
     async getCount(filter) {
-        return (await fetch(Config.baseUrl + '/history/getCount', {
+        return (await fetch(Config.baseUrl + '/api/history/getCount', {
             headers: { "Content-Type": "application/json" },
             method: 'POST',
             body: JSON.stringify(filter)

@@ -10,7 +10,7 @@ export class ProductService {
     }
     
     async addProduct(product) {
-        const res = await (await fetch(Config.baseUrl + '/product/add', {
+        const res = await (await fetch(Config.baseUrl + '/api/product/add', {
             headers: { "Content-Type": "application/json" },
             method: 'POST',
             body: JSON.stringify(product)
@@ -19,7 +19,7 @@ export class ProductService {
     }
     
     async changeProduct(product) {
-        const res = await (await fetch(Config.baseUrl + '/product/change', {
+        const res = await (await fetch(Config.baseUrl + '/api/product/change', {
             headers: { "Content-Type": "application/json" },
             method: 'POST',
             body: JSON.stringify(product)
@@ -28,13 +28,13 @@ export class ProductService {
     }
 
     async getProducts() {
-        return (await fetch(Config.baseUrl + '/product/findAll', {
+        return (await fetch(Config.baseUrl + '/api/product/findAll', {
             method: 'GET'
         })).json();
     }
 
     async delete(productId) {
-        return (await fetch(Config.baseUrl + '/product/delete/' + productId, {
+        return (await fetch(Config.baseUrl + '/api/product/delete/' + productId, {
             method: 'DELETE'
         })).json();
     }
