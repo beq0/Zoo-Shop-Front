@@ -10,7 +10,7 @@
     }
 
     export let show = false, _id, productCode = '', productName = '', productType = '', amount = null, quantity = null,
-    quantityType = QuantityType.COUNT, submited = false, originalPrice = null, sellingPrice = null;
+    quantityType = QuantityType.COUNT, submited = false, originalPrice = null, sellingPrice = null, official = true;
 
     let amountChanged = false, fullPriceChanged = false, sellingPriceChanged = false;
     let fullPrice = null;
@@ -86,7 +86,8 @@
         amount,
         originalPrice,
         sellingPrice,
-        sellDate
+        sellDate,
+        official
       }
       historyService.addHistory(history);
     }
