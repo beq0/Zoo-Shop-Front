@@ -22,7 +22,7 @@
     const parameterService = ParameterService.getInstance();
   
     let filterCode = null, filterName = null, filterType = 'ყველა', filterStartPrice = null, filterEndPrice = null,
-    filterStartLastChangeDate = null, filterEndlastChangeDate;
+    filterStartLastChangeDate = null, filterEndlastChangeDate = null, filterOfficial = true;
     let fileName = "პროდუქტები";
     let showWarningModal = false, warningModalMessage = '';
     
@@ -46,7 +46,8 @@
     }
     
     async function onSubmit() {
-        const columnNames = ['კოდი', 'სახელი', 'ტიპი', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'რაოდენობა', 'რაოდ. ტიპი', 'განახლების თარიღი', 'შექმნის თარიღი'];
+        const columnNames = ['კოდი', 'სახელი', 'ტიპი', 'ჯამური გაყიდვის ფასი', 'ჯამური ყიდვის ფასი', 'გაყიდვის ფასი', 'ყიდვის ფასი', 
+        'რაოდენობა', 'რაოდ. ტიპი', 'ოფიციალური', 'განახლების თარიღი', 'შექმნის თარიღი'];
         let filters = {
             code: filterCode,
             name: filterName,
@@ -54,21 +55,25 @@
             startPrice: filterStartPrice,
             endPrice: filterEndPrice,
             startLastChangeDate: filterStartLastChangeDate,
-            endLastChangeDate: filterEndlastChangeDate
+            endLastChangeDate: filterEndlastChangeDate,
+            official: filterOfficial
         }
         let filteredProducts = await productService.findProducts(filters)
         let content = [[]];
         filteredProducts.forEach(prod => {
             let currRow = [];
-            currRow.push(prod.code)
-            currRow.push(prod.name)
-            currRow.push(prod.productType)
-            currRow.push(prod.sellingPrice)
-            currRow.push(prod.originalPrice)
-            currRow.push(prod.quantity)
-            currRow.push(prod.quantityType)
-            currRow.push(DateFormats.formatDateTime(prod.lastChangeDate))
-            currRow.push(DateFormats.formatDateTime(prod.createDate))
+            currRow.push(prod.code);
+            currRow.push(prod.name);
+            currRow.push(prod.productType);
+            currRow.push((prod.sellingPrice * prod.quantity).toFixed(2));
+            currRow.push((prod.originalPrice * prod.quantity).toFixed(2));
+            currRow.push(prod.sellingPrice);
+            currRow.push(prod.originalPrice);
+            currRow.push(prod.quantity);
+            currRow.push(prod.quantityType);
+            currRow.push(prod.official ? "კი" : "არა");
+            currRow.push(DateFormats.formatDateTime(prod.lastChangeDate));
+            currRow.push(DateFormats.formatDateTime(prod.createDate));
             content.push(currRow);
         })
         ExcelGenerator.saveWithOneSheet("პროდუქტები", "პროდუქტები", "ზ", fileName, fileName, columnNames, content)
@@ -77,7 +82,7 @@
   
     function onClose() {
         filterCode = null, filterName=null, filterType='ყველა', filterStartPrice=null, filterEndPrice=null;
-        filterStartLastChangeDate = null, filterEndlastChangeDate = null;
+        filterStartLastChangeDate = null, filterEndlastChangeDate = null, filterOfficial = true;
         fileName = "პროდუქტები";
         show = false;
     }
@@ -96,6 +101,11 @@
         width: 300px;
     }
   
+    #official {
+        height: 17px;
+        box-shadow: none;
+    }
+
 </style>
   
 {#if show}
@@ -139,6 +149,10 @@
             <div class="form-group">
                 <div>ცვლილების საბოლოო თარიღი:&emsp;</div>
                 <input type="datetime-local" class="form-control" id="amount" bind:value={filterEndlastChangeDate}>
+            </div>
+            <div class="form-group">
+                <div>ოფიციალური:&emsp;</div>
+                <input type="checkbox" class="form-control" id="official" bind:checked={filterOfficial}>
             </div>
             <hr>
             <div>

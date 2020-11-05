@@ -71,7 +71,7 @@
 
     {#if pathName === '/products' || pathName === '/history' || pathName === '/parameter'}
     <li>
-        <div>
+        <div title="ფილტრაცია">
             <!-- svelte-ignore a11y-missing-attribute -->
             <input class="filterImage" type="image" 
             src="images/showFilter.png" width="27px" height="27px" on:click={()=>show.showToolbar=!show.showToolbar}>
@@ -81,7 +81,7 @@
 
     {#if pathName === '/products' || pathName === '/history'}
     <li>
-        <div>
+        <div title="რეპორტის გენერაცია">
             <!-- svelte-ignore a11y-missing-attribute -->
             <input class="filterImage" type="image" 
             src="images/excel.png" width="27px" height="27px" on:click={()=> {

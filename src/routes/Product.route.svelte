@@ -22,13 +22,13 @@
     ]
 
     let QuanitityType = {
-        COUNT: "რაოდენობითი",
+        COUNT: "ცალობითი",
         WEIGHT: "წონითი"
     }
     
     let productService = ProductService.getInstance(), parameterService = ParameterService.getInstance();
 
-    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'რაოდენობა', 'რაოდ. ტიპი', 'განახლების თარიღი', 'შექმნის თარიღი'];
+    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'ჯამ. გაყ. ფასი', 'ჯამ. ყიდ. ფასი', 'გაყ. ფასი', 'ყიდ. ფასი', 'რაოდენობა', 'რაოდ. ტიპი', 'განახ. თარიღი', 'შექმნ. თარიღი'];
     let filterCode = '', filterName='', filterType='', filterStartPrice=null, filterEndPrice=null;
     let showProductModal = false, isChange = false, showSellModal = false;
     let _id, productCode = null, name = null, productType = ProductType[0], sellingPrice = null, 
@@ -266,13 +266,13 @@
     </div>
 
     <!-- svelte-ignore a11y-missing-attribute -->
-    <div>
+    <div title="ძებნა">
         <input type="image" src="images/search.png" width="27px" height="27px" style="margin: 0 8px;"
             on:click={filterProducts}>
     </div>
     
     <!-- svelte-ignore a11y-missing-attribute -->
-    <div>
+    <div  title="ფილტრის გასუფთავება">
         <input type="image" src="images/clearFilters.ico" width="27px" height="27px" style="margin: 0 8px;"
             on:click={clearFilters}>
     </div>
@@ -286,7 +286,7 @@
             <th scope="col" style="width: 16%;">{column}</th>
         {/each}
         <th class="actionsTh" scope="col">
-            <div class="leftTooltipIconDiv" style="margin-left: auto;">
+            <div class="leftTooltipIconDiv" style="margin-left: auto;" title="დამატება">
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <input type="image" src="images/add.jpg" width="27px" height="27px" on:click={()=>{
                     isChange = false;
@@ -302,6 +302,8 @@
             <td>{product.code}</td>
             <td>{product.name}</td>
             <td>{product.productType}</td>
+            <td style="text-align: end;">{(product.quantity * product.sellingPrice).toFixed(2)} ₾</td>
+            <td style="text-align: end;">{(product.quantity * product.originalPrice).toFixed(2)} ₾</td>
             <td style="text-align: end;">{product.sellingPrice.toFixed(2)} ₾</td>
             <td style="text-align: end;">{product.originalPrice.toFixed(2)} ₾</td>
             <td>{(Number.isInteger(product.quantity) ? product.quantity : product.quantity.toFixed(product.quantityType == QuanitityType.WEIGHT ? 3 : 2)) +
@@ -311,21 +313,21 @@
             <td>{getDateString(product.createDate)}</td>
             <td style="padding-right: 5px;">
                 <div class="actionButtonsDiv">
-                    <div class="leftTooltipIconDiv" data-tooltip="გაყიდვა" data-tooltip-location="left" style="margin-right: 10px;">
+                    <div class="leftTooltipIconDiv"  title="გაყიდვა" style="margin-right: 10px;">
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <input type="image" src="images/sell.png" class="actionButtons" width="27px" height="27px"
                             on:click={() => {
                                 onSell(product, i);
                             }}>
                     </div>
-                    <div class="leftTooltipIconDiv" data-tooltip="რედაქტირება" data-tooltip-location="left" style="margin-right: 10px;">
+                    <div class="leftTooltipIconDiv"  title="რედაქტირება" style="margin-right: 10px;">
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <input type="image" src="images/edit.jpg" class="actionButtons" width="27px" height="27px"
                             on:click={() => {
                                 onChange(product, i);
                             }}>
                     </div>
-                    <div class="leftTooltipIconDiv" data-tooltip="წაშლა" data-tooltip-location="left" style="margin-right: 5px;">
+                    <div class="leftTooltipIconDiv"  title="წაშლა" style="margin-right: 5px;">
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <input type="image" src="images/delete.png" class="actionButtons" width="27px" height="27px"
                             on:click={async () => {

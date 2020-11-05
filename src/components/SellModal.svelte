@@ -5,7 +5,7 @@
     import WarningModal from './WarningModal.svelte';
 
     const QuanitityType = {
-      COUNT: "რაოდენობითი",
+      COUNT: "ცალობითი",
       WEIGHT: "წონითი"
     }
 

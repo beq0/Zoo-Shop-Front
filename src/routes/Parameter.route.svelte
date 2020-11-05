@@ -167,13 +167,13 @@
     </div>
 
     <!-- svelte-ignore a11y-missing-attribute -->
-    <div>
+    <div  title="ძებნა">
         <input type="image" src="images/search.png" width="27px" height="27px" style="margin: 0 8px;"
             on:click={filterParameters}>
     </div>
     
     <!-- svelte-ignore a11y-missing-attribute -->
-    <div>
+    <div  title="ფილტრის გასუფთავება">
         <input type="image" src="images/clearFilters.ico" width="27px" height="27px" style="margin: 0 8px;"
             on:click={clearFilters}>
     </div>
@@ -188,7 +188,7 @@
             <th scope="col" style="width: 16%;">{column}</th>
         {/each}
         <th class="actionsTh" scope="col">
-        <div class="leftTooltipIconDiv" style="margin-left: auto;">
+        <div class="leftTooltipIconDiv" style="margin-left: auto;" title="დამატება">
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <input type="image" src="images/add.jpg" width="27px" height="27px" on:click={()=>{
                     isChange = false;
@@ -210,7 +210,7 @@
             <td style="padding-right: 5px;">
                 <div class="actionButtonsDiv">
                     <!-- change button -->
-                    <div class="leftTooltipIconDiv" style="margin-right: 10px;">
+                    <div class="leftTooltipIconDiv" style="margin-right: 10px;" title="რედაქტირება">
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <input type="image" src="images/edit.jpg" class="actionButtons" width="27px" height="27px"
                             on:click={() => {
@@ -219,7 +219,7 @@
                     </div>
 
                     <!-- delete button -->
-                    <div class="leftTooltipIconDiv" style="margin-right: 5px;">
+                    <div class="leftTooltipIconDiv" style="margin-right: 5px;" title="წაშლა">
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <input type="image" src="images/delete.png" class="actionButtons" width="27px" height="27px"
                             on:click={async () => {

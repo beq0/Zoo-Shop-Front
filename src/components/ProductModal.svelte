@@ -15,7 +15,7 @@
   ]
 
   const QuanitityType = {
-    COUNT: "რაოდენობითი",
+    COUNT: "ცალობითი",
     WEIGHT: "წონითი"
   }
 

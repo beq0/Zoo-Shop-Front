@@ -196,13 +196,13 @@
     </div>
 
     <!-- svelte-ignore a11y-missing-attribute -->
-    <div>
+    <div title="ძებნა">
         <input type="image" src="images/search.png" width="27px" height="27px" style="margin: 0 8px;"
             on:click={filterHistory}>
     </div>
     
     <!-- svelte-ignore a11y-missing-attribute -->
-    <div>
+    <div title="ფილტრის გასუფთავება">
         <input type="image" src="images/clearFilters.ico" width="27px" height="27px" style="margin: 0 8px;"
             on:click={clearFilters}>
     </div>
@@ -231,7 +231,7 @@
             <td style="text-align: end;">{history.benefit.toFixed(2)} ₾</td>
             <td style="padding-right: 5px;">
                 <div class="actionButtonsDiv">
-                    <div class="leftTooltipIconDiv" data-tooltip="წაშლა" data-tooltip-location="left" style="margin-right: 5px;">
+                    <div class="leftTooltipIconDiv" title="წაშლა" style="margin-right: 5px;">
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <input type="image" src="images/delete.png" class="actionButtons" width="27px" height="27px"
                             on:click={async () => {
