@@ -40,5 +40,11 @@ export class HistoryService {
             body: JSON.stringify(filter)
         })).json();
     }
+
+    async delete(historyId) {
+        return (await fetch(Config.baseUrl + '/api/history/delete/' + historyId, {
+            method: 'DELETE'
+        })).json();
+    }
     
 }

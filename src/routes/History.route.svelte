@@ -5,6 +5,7 @@
     import { onMount } from 'svelte';
     import { DateFormats } from "../utils/DateFormats";
     import HistoryReport from "../components/reports/HistoryReport.svelte";
+    import DeleteModal from "../components/DeleteModal.svelte";
     
     export let show = {};
 
@@ -13,10 +14,11 @@
     const HOUR_IN_MILISECONDS = 36e+5;
     
     const today = new Date();
-    const historyService = HistoryService.getInstance();
+    let historyService = HistoryService.getInstance();
 
+    let deleteModalShow = false, deleteModalSubmited = false, toDeleteId = null;
     let filterCode = '', filterName='', filterType='', filterStartDate=null, filterEndDate=null;
-    let columnNames = ['სახელი', 'ტიპი', 'თარიღი', 'რაოდენობა', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'მოგება'];
+    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'თარიღი', 'რაოდენობა', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'მოგება'];
     let marked = DateFormats.formatDate(today);
     let pages = [DateFormats.formatDate(new Date(today.getTime() - 48 * HOUR_IN_MILISECONDS)), DateFormats.formatDate(new Date(today.getTime() - 24 * HOUR_IN_MILISECONDS)), DateFormats.formatDate(today)];
 
@@ -82,6 +84,11 @@
         if(marked != DateFormats.formatDate(today)) marked = pages[3];
     }
 
+    function onDelete(historyId) {
+        toDeleteId = historyId;
+        deleteModalShow = true;
+    }
+
     $: {
         if(DeviceDetectorService.isBrowser) {
             let url = new URL(window.location.href);
@@ -95,7 +102,17 @@
         if(new Date(tmp.getTime() + 24 * HOUR_IN_MILISECONDS) <= today) pages.push(DateFormats.formatDate(new Date(tmp.getTime() + 24 * HOUR_IN_MILISECONDS)));
         if(new Date(tmp.getTime() + 48 * HOUR_IN_MILISECONDS) <= today) pages.push(DateFormats.formatDate(new Date(tmp.getTime() + 48 * HOUR_IN_MILISECONDS)));
         getFilteredData(false);
+
+        if (deleteModalSubmited) {
+            deleteModalIsSubmited();
+        }
     }
+
+    function deleteModalIsSubmited() {
+        marked = marked;
+        deleteModalSubmited = false;
+    }
+
 </script>
 
 <style>
@@ -136,6 +153,19 @@
         background-color: #3cb5cf;
         border-color: transparent !important;
     }
+
+    .actionsTh {
+        width: 1%;
+        padding: 2px;
+        padding-right: 5px;
+        text-align: end;
+    }
+
+    .actionButtonsDiv {
+        display: flex;
+        justify-content: flex-end;
+    }
+
 </style>
 
 {#if show.showToolbar}
@@ -185,11 +215,13 @@
         {#each columnNames as column}
             <th scope="col" style="width: 14%;">{column}</th>
         {/each}
+        <th class="actionsTh" scope="col"></th>
     </tr>
     </thead>
     <tbody>
         {#each histories as history, i}
         <tr>
+            <td>{history.productCode}</td>
             <td>{history.productName}</td>
             <td>{history.productType}</td>
             <td>{DateFormats.formatDate(history.sellDate)}</td>
@@ -197,6 +229,17 @@
             <td style="text-align: end;">{history.sellingPrice.toFixed(2)} ₾</td>
             <td style="text-align: end;">{history.originalPrice.toFixed(2)} ₾</td>
             <td style="text-align: end;">{history.benefit.toFixed(2)} ₾</td>
+            <td style="padding-right: 5px;">
+                <div class="actionButtonsDiv">
+                    <div class="leftTooltipIconDiv" data-tooltip="წაშლა" data-tooltip-location="left" style="margin-right: 5px;">
+                        <!-- svelte-ignore a11y-missing-attribute -->
+                        <input type="image" src="images/delete.png" class="actionButtons" width="27px" height="27px"
+                            on:click={async () => {
+                                onDelete(history._id)
+                            }}>
+                    </div>
+                </div>
+            </td>
         </tr>
         {/each}
     </tbody>
@@ -226,4 +269,11 @@
 
 <HistoryReport
 bind:show={show.showHistoryReport}
+/>
+
+<DeleteModal
+bind:show={deleteModalShow}
+bind:submited={deleteModalSubmited}
+bind:toDeleteId={toDeleteId}
+bind:service={historyService}
 />
