@@ -147,6 +147,7 @@
                 originalPrice,
                 quantity,
                 quantityType,
+                official,
                 lastChangeDate: new Date()
             }
             if (!isChange) {
@@ -162,6 +163,7 @@
                 products[indexOfSelectedProduct].originalPrice = changedProduct.originalPrice;
                 products[indexOfSelectedProduct].quantity = changedProduct.quantity;
                 products[indexOfSelectedProduct].quantityType = changedProduct.quantityType;
+                products[indexOfSelectedProduct].official = changedProduct.official;
                 products[indexOfSelectedProduct].lastChangeDate = new Date();
             }
             productCode = null;

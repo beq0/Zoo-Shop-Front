@@ -21,7 +21,7 @@
     const productService = ProductService.getInstance();
     const parameterService = ParameterService.getInstance();
   
-    let filterCode = null, filterName = null, filterType = null, filterStartPrice = null, filterEndPrice = null,
+    let filterCode = null, filterName = null, filterType = 'ყველა', filterStartPrice = null, filterEndPrice = null,
     filterStartLastChangeDate = null, filterEndlastChangeDate;
     let fileName = "პროდუქტები";
     let showWarningModal = false, warningModalMessage = '';
@@ -42,6 +42,7 @@
     async function initializeParameters() {
         let res = await parameterService.getParameter("productTypes", ParameterType.LIST, ["სხვა"]);
         ProductType = ('' + res.value).split(",");
+        ProductType.push('ყველა');
     }
     
     async function onSubmit() {
@@ -75,7 +76,7 @@
     }
   
     function onClose() {
-        filterCode = null, filterName=null, filterType=null, filterStartPrice=null, filterEndPrice=null;
+        filterCode = null, filterName=null, filterType='ყველა', filterStartPrice=null, filterEndPrice=null;
         filterStartLastChangeDate = null, filterEndlastChangeDate = null;
         fileName = "პროდუქტები";
         show = false;

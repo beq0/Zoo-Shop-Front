@@ -21,7 +21,7 @@
     const historyService = HistoryService.getInstance();
     const parameterService = ParameterService.getInstance();
   
-    let filterProductCode = null, filterProductName = null, filterProductType = null, 
+    let filterProductCode = null, filterProductName = null, filterProductType = 'ყველა', 
     filterBenefitFrom = null, filterBenefitTo = null, filterSellDateFrom = null, filterSellDateTo = null, filterOfficial = true;
     let fileName = "გაყიდვის ისტორია";
     let showWarningModal = false, warningModalMessage = '';
@@ -42,6 +42,7 @@
     async function initializeParameters() {
         let res = await parameterService.getParameter("productTypes", ParameterType.LIST, ["სხვა"]);
         ProductType = ('' + res.value).split(",");
+        ProductType.push('ყველა')
     }
     
     async function onSubmit() {
@@ -75,7 +76,7 @@
     }
   
     function onClose() {
-        filterProductCode = null, filterProductName = null, filterProductType = null;
+        filterProductCode = null, filterProductName = null, filterProductType = 'ყველა';
         filterBenefitFrom = null, filterBenefitTo = null, filterSellDateFrom = null, filterSellDateTo = null, filterOfficial = true;
         fileName = "გაყიდვის ისტორია";
         show = false;
@@ -144,17 +145,17 @@
             
             <div class="form-group">
                 <div>გაყიდვის საწყისი თარიღი:&emsp;</div>
-                <input type="datetime-local" class="form-control" id="amount" bind:value={filterSellDateFrom}>
+                <input type="date" class="form-control" id="amount" bind:value={filterSellDateFrom}>
             </div>
             
             <div class="form-group">
                 <div>გაყიდვის საბოლოო თარიღი:&emsp;</div>
-                <input type="datetime-local" class="form-control" id="amount" bind:value={filterSellDateTo}>
+                <input type="date" class="form-control" id="amount" bind:value={filterSellDateTo}>
             </div>
             
             <div class="form-group">
                 <div>ოფიციალური:&emsp;</div>
-                <input type="checkbox" class="form-control" id="official" bind:value={filterOfficial}>
+                <input type="checkbox" class="form-control" id="official" bind:checked={filterOfficial}>
             </div>
             <hr>
             <div>

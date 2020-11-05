@@ -85,7 +85,6 @@
             <!-- svelte-ignore a11y-missing-attribute -->
             <input class="filterImage" type="image" 
             src="images/excel.png" width="27px" height="27px" on:click={()=> {
-                console.log(pathName, show.showProductReport)
                 if (pathName === '/products') show.showProductReport = true;
                 if (pathName === '/history') show.showHistoryReport = true;
             }}>

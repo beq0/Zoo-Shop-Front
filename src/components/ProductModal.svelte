@@ -61,7 +61,6 @@
       quantityType,
       official
     }
-    console.log(updatedProduct);
     if (name && productType && quantity != null && sellingPrice != null && originalPrice != null) {
       let res = null
       if (!isChange) res = await productService.addProduct(updatedProduct);
@@ -88,11 +87,6 @@
     quantity = null;
     quantityType = QuanitityType.COUNT; 
     official = true;
-  }
-
-  $: {
-    official;
-    console.log(official);
   }
 
 </script>
