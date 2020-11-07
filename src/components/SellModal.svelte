@@ -70,6 +70,7 @@
           _id = res._id;
           quantity -= amount;
           amount = null;
+          fullPrice = null;
         } else {
           warningModalMessage = 'დაფიქსირდა შეცდომა პროდუქტისთვის რაოდენობის დაკლების დროს!'
           showWarningModal = true;

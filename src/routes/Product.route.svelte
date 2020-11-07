@@ -33,7 +33,7 @@ import a from "file-saver";
     let filterCode = '', filterName='', filterType='', filterStartPrice=null, filterEndPrice=null;
     let showProductModal = false, isChange = false, showSellModal = false;
     let _id, productCode = null, name = null, productType = ProductType[0], sellingPrice = null, 
-            originalPrice = null, quantity = null, quantityType = QuantityType.COUNT, official = null;
+            originalPrice = null, quantity = null, quantityType = QuantityType.COUNT, official = true;
     let productModalSubmited = false;
     let indexOfSelectedProduct;
     let amountToSell = null;
@@ -242,6 +242,10 @@ import a from "file-saver";
         background-color: lightsteelblue;
     }
 
+    .sum-td {
+        font-weight: bold;
+    }
+
     .sum-empty-td {
         border: none;
     }
@@ -312,22 +316,22 @@ import a from "file-saver";
     </thead>
     <tbody>
         <tr class="sum-tr">
-            <td class="sum-empty-td"></td>
-            <td class="sum-empty-td"></td>
-            <td class="sum-empty-td"></td>
-            <td class="financial-td">{products.reduce((sum, prod) => { return sum + (prod.quantity * prod.sellingPrice) }, 0).toFixed(2)} ₾</td>
-            <td class="financial-td">{products.reduce((sum, prod) => { return sum + (prod.quantity * prod.originalPrice) }, 0).toFixed(2)} ₾</td>
-            <td class="financial-td">{products.reduce((sum, prod) => { return sum + prod.sellingPrice }, 0).toFixed(2)} ₾</td>
-            <td class="financial-td">{products.reduce((sum, prod) => { return sum + prod.originalPrice }, 0).toFixed(2)} ₾</td>
-            <td>{
+            <td class="sum-empty-td sum-td">ჯამური:</td>
+            <td class="sum-empty-td sum-td"></td>
+            <td class="sum-empty-td sum-td"></td>
+            <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + (prod.quantity * prod.sellingPrice) }, 0).toFixed(2)} ₾</td>
+            <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + (prod.quantity * prod.originalPrice) }, 0).toFixed(2)} ₾</td>
+            <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + prod.sellingPrice }, 0).toFixed(2)} ₾</td>
+            <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + prod.originalPrice }, 0).toFixed(2)} ₾</td>
+            <td class="sum-td">{
                 products.reduce((sum, prod) => { return prod.quantityType == QuantityType.COUNT ? sum + prod.quantity : sum }, 0) + " ც; " +
                 products.reduce((sum, prod) => { return prod.quantityType == QuantityType.COUNT ? sum : sum + prod.quantity }, 0).toFixed(3) + " კგ."
             }
             </td>
-            <td class="sum-empty-td"></td>
-            <td class="sum-empty-td"></td>
-            <td class="sum-empty-td"></td>
-            <td class="sum-empty-td"></td>
+            <td class="sum-empty-td sum-td"></td>
+            <td class="sum-empty-td sum-td"></td>
+            <td class="sum-empty-td sum-td"></td>
+            <td class="sum-empty-td sum-td"></td>
         </tr>
         {#each products as product, i}
         <tr>

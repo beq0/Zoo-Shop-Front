@@ -15,6 +15,14 @@ input[type="image"]
     outline: none;
 }
 
+td {
+  vertical-align: middle !important;
+}
+
+th {
+  vertical-align: middle !important;
+}
+
 
 // popups
 .popup .overlay {
