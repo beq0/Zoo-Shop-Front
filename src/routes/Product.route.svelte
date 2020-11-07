@@ -8,6 +8,7 @@
     import { ParameterService } from "../services/parameter.service";
     import { onMount } from 'svelte';
     import { navigate } from "svelte-routing";
+import a from "file-saver";
 
     export let show = {};
 
@@ -21,7 +22,7 @@
         "სხვა"
     ]
 
-    let QuanitityType = {
+    let QuantityType = {
         COUNT: "ცალობითი",
         WEIGHT: "წონითი"
     }
@@ -32,7 +33,7 @@
     let filterCode = '', filterName='', filterType='', filterStartPrice=null, filterEndPrice=null;
     let showProductModal = false, isChange = false, showSellModal = false;
     let _id, productCode = null, name = null, productType = ProductType[0], sellingPrice = null, 
-            originalPrice = null, quantity = null, quantityType = QuanitityType.COUNT, official = null;
+            originalPrice = null, quantity = null, quantityType = QuantityType.COUNT, official = null;
     let productModalSubmited = false;
     let indexOfSelectedProduct;
     let amountToSell = null;
@@ -172,7 +173,7 @@
             sellingPrice = null;
             originalPrice = null;
             quantity = null;
-            quantityType = QuanitityType.COUNT
+            quantityType = QuantityType.COUNT
             productModalSubmited = false;
     }
 
@@ -236,6 +237,19 @@
         width: 27px;
         font-weight: normal;
     }
+
+    .sum-tr {
+        background-color: lightsteelblue;
+    }
+
+    .sum-empty-td {
+        border: none;
+    }
+
+    .financial-td {
+        text-align: end;
+    }
+
 </style>
 
 {#if show.showToolbar}
@@ -297,17 +311,35 @@
     </tr>
     </thead>
     <tbody>
+        <tr class="sum-tr">
+            <td class="sum-empty-td"></td>
+            <td class="sum-empty-td"></td>
+            <td class="sum-empty-td"></td>
+            <td class="financial-td">{products.reduce((sum, prod) => { return sum + (prod.quantity * prod.sellingPrice) }, 0).toFixed(2)} ₾</td>
+            <td class="financial-td">{products.reduce((sum, prod) => { return sum + (prod.quantity * prod.originalPrice) }, 0).toFixed(2)} ₾</td>
+            <td class="financial-td">{products.reduce((sum, prod) => { return sum + prod.sellingPrice }, 0).toFixed(2)} ₾</td>
+            <td class="financial-td">{products.reduce((sum, prod) => { return sum + prod.originalPrice }, 0).toFixed(2)} ₾</td>
+            <td>{
+                products.reduce((sum, prod) => { return prod.quantityType == QuantityType.COUNT ? sum + prod.quantity : sum }, 0) + " ც; " +
+                products.reduce((sum, prod) => { return prod.quantityType == QuantityType.COUNT ? sum : sum + prod.quantity }, 0).toFixed(3) + " კგ."
+            }
+            </td>
+            <td class="sum-empty-td"></td>
+            <td class="sum-empty-td"></td>
+            <td class="sum-empty-td"></td>
+            <td class="sum-empty-td"></td>
+        </tr>
         {#each products as product, i}
         <tr>
             <td>{product.code}</td>
             <td>{product.name}</td>
             <td>{product.productType}</td>
-            <td style="text-align: end;">{(product.quantity * product.sellingPrice).toFixed(2)} ₾</td>
-            <td style="text-align: end;">{(product.quantity * product.originalPrice).toFixed(2)} ₾</td>
-            <td style="text-align: end;">{product.sellingPrice.toFixed(2)} ₾</td>
-            <td style="text-align: end;">{product.originalPrice.toFixed(2)} ₾</td>
-            <td>{(Number.isInteger(product.quantity) ? product.quantity : product.quantity.toFixed(product.quantityType == QuanitityType.WEIGHT ? 3 : 2)) +
-                 (product.quantityType == QuanitityType.WEIGHT ? " კგ." : " ც.")}</td>
+            <td class="financial-td">{(product.quantity * product.sellingPrice).toFixed(2)} ₾</td>
+            <td class="financial-td">{(product.quantity * product.originalPrice).toFixed(2)} ₾</td>
+            <td class="financial-td">{product.sellingPrice.toFixed(2)} ₾</td>
+            <td class="financial-td">{product.originalPrice.toFixed(2)} ₾</td>
+            <td>{(Number.isInteger(product.quantity) ? product.quantity : product.quantity.toFixed(product.quantityType == QuantityType.WEIGHT ? 3 : 2)) +
+                 (product.quantityType == QuantityType.WEIGHT ? " კგ." : " ც.")}</td>
             <td>{product.quantityType}</td>
             <td>{getDateString(product.lastChangeDate)}</td>
             <td>{getDateString(product.createDate)}</td>
