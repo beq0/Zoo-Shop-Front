@@ -194,6 +194,10 @@ import a from "file-saver";
         return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + ' ' + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     }
 
+    function getWholeQuantity(prod) {
+        return prod.quantity.reduce((sum1, qt) => { return sum1 + qt.quantity}, 0);
+    }
+
 </script>
 
 <style>
@@ -319,13 +323,13 @@ import a from "file-saver";
             <td class="sum-empty-td sum-td">ჯამური:</td>
             <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
-            <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + (prod.quantity * prod.sellingPrice) }, 0).toFixed(2)} ₾</td>
-            <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + (prod.quantity * prod.originalPrice) }, 0).toFixed(2)} ₾</td>
+            <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + (getWholeQuantity(prod) * prod.sellingPrice) }, 0).toFixed(2)} ₾</td>
+            <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + prod.quantity.reduce((sum1, qt) => { return sum1 + qt.quantity * qt.originalPrice}, 0) }, 0).toFixed(2)} ₾</td>
             <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + prod.sellingPrice }, 0).toFixed(2)} ₾</td>
             <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + prod.originalPrice }, 0).toFixed(2)} ₾</td>
             <td class="sum-td">{
-                products.reduce((sum, prod) => { return prod.quantityType == QuantityType.COUNT ? sum + prod.quantity : sum }, 0) + " ც; " +
-                products.reduce((sum, prod) => { return prod.quantityType == QuantityType.COUNT ? sum : sum + prod.quantity }, 0).toFixed(3) + " კგ."
+                products.reduce((sum, prod) => { return prod.quantityType == QuantityType.COUNT ? sum + getWholeQuantity(prod) : sum }, 0) + " ც; " +
+                products.reduce((sum, prod) => { return prod.quantityType == QuantityType.COUNT ? sum : sum + getWholeQuantity(prod) }, 0).toFixed(3) + " კგ."
             }
             </td>
             <td class="sum-empty-td sum-td"></td>
@@ -338,11 +342,11 @@ import a from "file-saver";
             <td>{product.code}</td>
             <td>{product.name}</td>
             <td>{product.productType}</td>
-            <td class="financial-td">{(product.quantity * product.sellingPrice).toFixed(2)} ₾</td>
-            <td class="financial-td">{(product.quantity * product.originalPrice).toFixed(2)} ₾</td>
+            <td class="financial-td">{(getWholeQuantity(product) * product.sellingPrice).toFixed(2)} ₾</td>
+            <td class="financial-td">{(getWholeQuantity(product) * product.originalPrice).toFixed(2)} ₾</td>
             <td class="financial-td">{product.sellingPrice.toFixed(2)} ₾</td>
             <td class="financial-td">{product.originalPrice.toFixed(2)} ₾</td>
-            <td>{(Number.isInteger(product.quantity) ? product.quantity : product.quantity.toFixed(product.quantityType == QuantityType.WEIGHT ? 3 : 2)) +
+            <td>{((getWholeQuantity(product)).toFixed(product.quantityType == QuantityType.WEIGHT ? 3 : 0)) +
                  (product.quantityType == QuantityType.WEIGHT ? " კგ." : " ც.")}</td>
             <td>{product.quantityType}</td>
             <td>{getDateString(product.lastChangeDate)}</td>

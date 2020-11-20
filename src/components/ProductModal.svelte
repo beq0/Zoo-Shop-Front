@@ -28,6 +28,23 @@
 
   const productService = ProductService.getInstance();
   const parameterService = ParameterService.getInstance();
+  let qs = [
+      {
+        quantity: 5,
+        originalPrice: 5,
+        createDate: new Date()
+      },
+      {
+        quantity: 1,
+        originalPrice: 1,
+        createDate: new Date()
+      },
+      {
+        quantity: 3,
+        originalPrice: 3,
+        createDate: new Date()
+      }
+    ]
 
   let showWarningModal = false, warningModalMessage = '';
   
@@ -40,7 +57,6 @@
         onClose();
       }
     });
-
     initializeParameters()
   });
 
@@ -99,6 +115,18 @@
     align-items: center;
   }
 
+  .label {
+    margin-right: 15px;
+  }
+
+  #quantity-label {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+  }
+
   .form-control {
     width: 300px;
   }
@@ -106,6 +134,26 @@
   #official {
     height: 17px;
     box-shadow: none;
+  }
+
+  .quantities {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .quantities-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .quantity-info-width {
+    width: 150px;
+  }
+
+  #quantity-pairs {
+    max-height: 115px; 
+    margin-top: 10px;
   }
 
 </style>
@@ -117,18 +165,18 @@
     <h5 class="modal-title">პროდუქტის {title}</h5>
     <hr>
     <div class="form-group">
-      <div>კოდი:&emsp;</div>
-      <input type="text" class="form-control" bind:value={productCode}>
+      <div class="label">კოდი:</div>
+      <input type="text" class="form-control" bind:value={productCode} required>
     </div>
     
     <div class="form-group">
-      <div>სახელი:&emsp;</div>
-      <input type="text" class="form-control" bind:value={name}>
+      <div class="label">სახელი:</div>
+      <input type="text" class="form-control" bind:value={name} required>
     </div>
     
     <div class="form-group">
-      <div>ტიპი:&emsp;</div>
-      <select class="form-control" bind:value={productType}>
+      <div class="label">ტიპი:</div>
+      <select class="form-control" bind:value={productType} required>
         {#each Object.values(ProductType) as productType}
         <option>{productType}</option>
         {/each}
@@ -136,23 +184,50 @@
     </div>
     
     <div class="form-group">
-      <div>გაყიდვის&nbsp;ფასი:&emsp;</div>
+      <div class="label">გაყიდვის&nbsp;ფასი:</div>
       <input type="number" class="form-control" bind:value={sellingPrice}>
     </div>
     
     <div class="form-group">
-      <div>ყიდვის&nbsp;ფასი:&emsp;</div>
-      <input type="number" class="form-control" bind:value={originalPrice}>
+      <div class="label">ყიდვის&nbsp;ფასი:</div>
+      <input type="number" class="form-control" bind:value={originalPrice} required>
     </div>
     
     <div class="form-group">
-      <div>რაოდენობა:&emsp;</div>
-      <input type="number" class="form-control" bind:value={quantity}>
+      <div id="quantity-label" class="label">
+        <div>რაოდენობები:</div>
+        <!-- svelte-ignore a11y-missing-attribute -->
+        <input type="image" src="images/add.jpg" width="23px" height="23px" on:click={() => {
+          qs.push({
+            quantity: null,
+            originalPrice: null,
+            createDate: new Date()
+          });
+          qs = qs;
+        }}>
+      </div>
+      <div class="quantities">
+        <div class="quantities-info">
+          <div class="quantity-info-width">რაოდენობა</div>
+          <div class="quantity-info-width">ფასი</div>
+        </div>
+        <div id="quantity-pairs" style="{qs.length <= 3 ? "" : "overflow-y: scroll;"}">
+          {#each qs as qt, i}
+          <div class="quantities-info">
+            <input type="number" class="form-control" style="width: {qs.length <= 3 ? "150" : "140"}px;" bind:value={qt.quantity}>
+            <input type="number" class="form-control" style="width: {qs.length <= 3 ? "150" : "140"}px;" bind:value={qt.originalPrice}>
+            <!-- svelte-ignore a11y-missing-attribute -->
+            <input type="image" src="images/delete.png" style="margin-left: 5px;" width="23px" height="23px" on:click={() => {
+            }}> 
+          </div>
+          {/each}
+        </div>
+      </div>
     </div>
     
     <div class="form-group">
-      <div>რაოდ. ტიპი:&emsp;</div>
-      <select class="form-control" bind:value={quantityType}>
+      <div class="label">რაოდ. ტიპი:</div>
+      <select class="form-control" bind:value={quantityType} required>
         {#each Object.values(QuanitityType) as quantityType}
         <option>{quantityType}</option>
         {/each}
@@ -160,8 +235,8 @@
     </div>
     
     <div class="form-group">
-      <div>ოფიციალური:&emsp;</div>
-      <input type="checkbox" class="form-control" id="official" bind:checked={official}>
+      <div class="label">ოფიციალური:</div>
+      <input type="checkbox" class="form-control" id="official" bind:checked={official} required>
     </div>
     <hr>
     <div>
