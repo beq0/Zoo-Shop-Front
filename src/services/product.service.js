@@ -46,4 +46,19 @@ export class ProductService {
             body: JSON.stringify(filters)
         })).json();
     }
+
+    async sellProduct(_id, amount, sellingPrice, sellDate) {
+        const req = {
+            _id,
+            amount,
+            sellingPrice, 
+            sellDate
+        } 
+        const res = await (await fetch(Config.baseUrl + '/api/product/sellProduct', {
+            headers: { "Content-Type": "application/json" },
+            method: 'POST',
+            body: JSON.stringify(req)
+        })).json();
+        return res;
+    }
 }

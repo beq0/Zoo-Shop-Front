@@ -57,18 +57,15 @@
 
     async function onSubmit() {
         if(!amount) return;
-        let updatedProduct = {
-            _id: _id,
-            quantity: quantity - amount,
-        }
-        let res = await productService.changeProduct(updatedProduct);
+        let res = await productService.sellProduct(_id, amount, sellingPrice, sellDate);
         if (res.status === 200) {
           // TODO! აქ დასამატებელი იქნება ისტორიის დამატებისას ხომ არ მოხდა შეცდომა
-          addSellHistory();
+          // addSellHistory();
           show=false;
           submited = true;
           _id = res._id;
-          quantity -= amount;
+          quantity = res.newQuantity;
+          originalPrice = res.newOriginalPrice;
           amount = null;
           fullPrice = null;
         } else {
