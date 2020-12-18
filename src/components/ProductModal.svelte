@@ -23,28 +23,11 @@
   export let title = 'დამატება';
   export let _id, productCode = null, name = "", productType = ProductType[0], 
           sellingPrice = null, originalPrice = null, quantity = null, quantityType = QuanitityType.COUNT, official = true;
-  export let submited = false;
+  export let submited = false, editedQuantities = [];
   export let isChange;
 
   const productService = ProductService.getInstance();
   const parameterService = ParameterService.getInstance();
-  let qs = [
-      {
-        quantity: 5,
-        originalPrice: 5,
-        createDate: new Date()
-      },
-      {
-        quantity: 1,
-        originalPrice: 1,
-        createDate: new Date()
-      },
-      {
-        quantity: 3,
-        originalPrice: 3,
-        createDate: new Date()
-      }
-    ]
 
   let showWarningModal = false, warningModalMessage = '';
   
@@ -66,6 +49,7 @@
   }
   
   async function onSubmit() {
+    const filteredEditedQuantities = editedQuantities.filter(q => q.quantity !== null && q.originalPrice !== null);
     let updatedProduct = {
       _id,
       code: productCode,
@@ -73,11 +57,11 @@
       productType,
       sellingPrice,
       originalPrice,
-      quantity,
+      quantity: filteredEditedQuantities,
       quantityType,
       official
     }
-    if (name && productType && quantity != null && sellingPrice != null && originalPrice != null) {
+    if (name && productType && sellingPrice != null) {
       let res = null
       if (!isChange) res = await productService.addProduct(updatedProduct);
       else res = await productService.changeProduct(updatedProduct)
@@ -93,6 +77,7 @@
   }
 
   function onClose() {
+    editedQuantities = []
     show = false;
     _id = null
     productCode = null
@@ -190,7 +175,7 @@
     
     <div class="form-group">
       <div class="label">ყიდვის&nbsp;ფასი:</div>
-      <input type="number" class="form-control" bind:value={originalPrice} required>
+      <input type="number" class="form-control" bind:value={originalPrice} readonly>
     </div>
     
     <div class="form-group">
@@ -198,24 +183,24 @@
         <div>რაოდენობები:</div>
         <!-- svelte-ignore a11y-missing-attribute -->
         <input type="image" src="images/add.jpg" width="23px" height="23px" on:click={() => {
-          qs.push({
+          editedQuantities.push({
             quantity: null,
             originalPrice: null,
             createDate: new Date()
           });
-          qs = qs;
+          editedQuantities = editedQuantities;
         }}>
       </div>
       <div class="quantities">
         <div class="quantities-info">
           <div class="quantity-info-width">რაოდენობა</div>
-          <div class="quantity-info-width">ფასი</div>
+          <div class="quantity-info-width">ყიდვის ფასი</div>
         </div>
-        <div id="quantity-pairs" style="{qs.length <= 3 ? "" : "overflow-y: scroll;"}">
-          {#each qs as qt, i}
+        <div id="quantity-pairs" style="{editedQuantities.length <= 3 ? "" : "overflow-y: scroll;"}">
+          {#each editedQuantities as qt, i}
           <div class="quantities-info">
-            <input type="number" class="form-control" style="width: {qs.length <= 3 ? "150" : "140"}px;" bind:value={qt.quantity}>
-            <input type="number" class="form-control" style="width: {qs.length <= 3 ? "150" : "140"}px;" bind:value={qt.originalPrice}>
+            <input type="number" class="form-control" style="width: {editedQuantities.length <= 3 ? "150" : "140"}px;" bind:value={qt.quantity}>
+            <input type="number" class="form-control" style="width: {editedQuantities.length <= 3 ? "150" : "140"}px;" bind:value={qt.originalPrice}>
             <!-- svelte-ignore a11y-missing-attribute -->
             <input type="image" src="images/delete.png" style="margin-left: 5px;" width="23px" height="23px" on:click={() => {
             }}> 

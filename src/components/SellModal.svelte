@@ -1,6 +1,5 @@
 <script>
     import {ProductService} from "../services/product.service";
-    import {HistoryService} from "../services/history.service";
     import { onMount } from 'svelte';
     import WarningModal from './WarningModal.svelte';
 
@@ -10,7 +9,7 @@
     }
 
     export let show = false, _id, productCode = '', productName = '', productType = '', amount = null, quantity = null,
-    quantityType = QuantityType.COUNT, submited = false, originalPrice = null, sellingPrice = null, official = true;
+    quantityType = QuantityType.COUNT, submited = false, originalPrice = null, sellingPrice = null, official = true, availableAmount = null;
 
     let amountChanged = false, fullPriceChanged = false, sellingPriceChanged = false;
     let fullPrice = null;
@@ -19,7 +18,6 @@
     let sellDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
 
     const productService = ProductService.getInstance();
-    const historyService = HistoryService.getInstance();
 
     onMount(() => {
       addEventListener("keyup", (event) => {
@@ -52,6 +50,7 @@
         productName = null;
         amount = null;
         fullPrice = null;
+        availableAmount = null;
         show = false;
     }
 
@@ -59,8 +58,7 @@
         if(!amount) return;
         let res = await productService.sellProduct(_id, amount, sellingPrice, sellDate);
         if (res.status === 200) {
-          // TODO! აქ დასამატებელი იქნება ისტორიის დამატებისას ხომ არ მოხდა შეცდომა
-          // addSellHistory();
+          availableAmount = null;
           show=false;
           submited = true;
           _id = res._id;
@@ -75,47 +73,22 @@
         }
     }
 
-    function addSellHistory() {
-      let history = {
-        productCode,
-        productId: _id,
-        productName,
-        productType,
-        amount,
-        originalPrice,
-        sellingPrice,
-        sellDate,
-        official
-      }
-      historyService.addHistory(history);
-    }
-
     $: {
       
       if (amountChanged) {
-        // if the amount is less than 0 or more than the available quantity, fix it
-        if (amount < 0) {
-          amount = 0;
-        } else if ((quantity || quantity == 0) && quantity - amount <= 0) {
-          amount = quantity;
-        }
-
-        // if the amount is not the integer and the product's quantity type is COUNT, floor the amount
-        if (isCountType() && !isInt(amount)) {
-          amount = Math.floor(amount);
-        }
-        
-        // if the amount's decimal points are more than 3, fix it to 3
-        if (!isCountType() && getDecimalPoints(amount) > 3) {
-          amount = amount.toFixed(3);
-        }
+        fixAmount();
         fullPrice = getFullPrice();
         amountChanged = false;
       }
 
       if (fullPriceChanged) {
+        if (fullPrice < 0) fullPrice = 0;
         amount = getAmount();
         fullPriceChanged = false;
+        fixAmount();
+        if ((availableAmount || availableAmount == 0) && availableAmount - amount <= 0) {
+          fullPrice = getFullPrice();
+        }
       }
 
       if (sellingPriceChanged) {
@@ -123,6 +96,25 @@
         sellingPriceChanged = false;
       }
       
+    }
+
+    function fixAmount() {
+      // if the amount is less than 0 or more than the available amount, fix it
+      if (amount < 0) {
+        amount = 0;
+      } else if ((availableAmount || availableAmount == 0) && availableAmount - amount <= 0) {
+        amount = availableAmount;
+      }
+
+      // if the amount is not the integer and the product's quantity type is COUNT, floor the amount
+      if (isCountType() && !isInt(amount)) {
+        amount = Math.floor(amount);
+      }
+      
+      // if the amount's decimal points are more than 3, fix it to 3
+      if (!isCountType() && getDecimalPoints(amount) > 3) {
+        amount = amount.toFixed(3);
+      }
     }
 
     function getFullPrice() {

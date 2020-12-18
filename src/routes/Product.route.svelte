@@ -8,7 +8,8 @@
     import { ParameterService } from "../services/parameter.service";
     import { onMount } from 'svelte';
     import { navigate } from "svelte-routing";
-import a from "file-saver";
+    import { ArrayHelper } from "../utils/ArrayHelper";
+    import { NumberHelper } from "../utils/NumberHelper";
 
     export let show = {};
 
@@ -34,10 +35,10 @@ import a from "file-saver";
     let showProductModal = false, isChange = false, showSellModal = false;
     let _id, productCode = null, name = null, productType = ProductType[0], sellingPrice = null, 
             originalPrice = null, quantity = null, quantityType = QuantityType.COUNT, official = true;
-    let productModalSubmited = false;
+    let productModalSubmited = false, quantitiesFromProductModal = [];
     let indexOfSelectedProduct;
     let amountToSell = null;
-    let sellModalSubmited = false;
+    let sellModalSubmited = false, availableAmount = null;
     let toDeleteId = null, deleteModalShow = false, deleteModalSubmited = false, indexOfProductToDelete = null;
 
     if(DeviceDetectorService.isBrowser) {
@@ -76,6 +77,7 @@ import a from "file-saver";
         quantity = product.quantity;
         quantityType = product.quantityType;
         official = product.official;
+        quantitiesFromProductModal = product.quantity;
         showProductModal = true;
         isChange = true;
         indexOfSelectedProduct = i;
@@ -115,6 +117,8 @@ import a from "file-saver";
         originalPrice = product.originalPrice;
         official = product.official;
         indexOfSelectedProduct = i;
+        availableAmount = getWholeQuantity(product);
+        console.log(availableAmount);
         showSellModal = true;
     }
 
@@ -145,8 +149,8 @@ import a from "file-saver";
                 name,
                 productType: productType,
                 sellingPrice,
-                originalPrice,
-                quantity,
+                originalPrice: quantitiesFromProductModal[0].originalPrice,
+                quantity: quantitiesFromProductModal,
                 quantityType,
                 official,
                 lastChangeDate: new Date()
@@ -179,6 +183,7 @@ import a from "file-saver";
 
     function sellModalIsSubmited() {
         products[indexOfSelectedProduct].quantity = quantity;
+        products[indexOfSelectedProduct].originalPrice = originalPrice;
         name = null;
         sellModalSubmited = false;
     }
@@ -312,6 +317,7 @@ import a from "file-saver";
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <input type="image" src="images/add.jpg" width="27px" height="27px" on:click={()=>{
                     isChange = false;
+                    quantitiesFromProductModal = [];
                     showProductModal = true;
                 }}>
             </div>
@@ -324,9 +330,9 @@ import a from "file-saver";
             <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
             <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + (getWholeQuantity(prod) * prod.sellingPrice) }, 0).toFixed(2)} ₾</td>
-            <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + prod.quantity.reduce((sum1, qt) => { return sum1 + qt.quantity * qt.originalPrice}, 0) }, 0).toFixed(2)} ₾</td>
+            <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + (ArrayHelper.isNotEmpty(prod.quantity) ? prod.quantity.reduce((sum1, qt) => { return sum1 + qt.quantity * qt.originalPrice}, 0) : 0) }, 0).toFixed(2)} ₾</td>
             <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + prod.sellingPrice }, 0).toFixed(2)} ₾</td>
-            <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + prod.originalPrice }, 0).toFixed(2)} ₾</td>
+            <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + (NumberHelper.isNonZero(prod.originalPrice) ? prod.originalPrice : 0)}, 0).toFixed(2)} ₾</td>
             <td class="sum-td">{
                 products.reduce((sum, prod) => { return prod.quantityType == QuantityType.COUNT ? sum + getWholeQuantity(prod) : sum }, 0) + " ც; " +
                 products.reduce((sum, prod) => { return prod.quantityType == QuantityType.COUNT ? sum : sum + getWholeQuantity(prod) }, 0).toFixed(3) + " კგ."
@@ -343,9 +349,9 @@ import a from "file-saver";
             <td>{product.name}</td>
             <td>{product.productType}</td>
             <td class="financial-td">{(getWholeQuantity(product) * product.sellingPrice).toFixed(2)} ₾</td>
-            <td class="financial-td">{(getWholeQuantity(product) * product.originalPrice).toFixed(2)} ₾</td>
+            <td class="financial-td">{ArrayHelper.isNotEmpty(product.quantity) ? (getWholeQuantity(product) * product.originalPrice).toFixed(2) : 0} ₾</td>
             <td class="financial-td">{product.sellingPrice.toFixed(2)} ₾</td>
-            <td class="financial-td">{product.originalPrice.toFixed(2)} ₾</td>
+            <td class="financial-td">{NumberHelper.isNonZero(product.originalPrice) ? product.originalPrice.toFixed(2) : 0} ₾</td>
             <td>{((getWholeQuantity(product)).toFixed(product.quantityType == QuantityType.WEIGHT ? 3 : 0)) +
                  (product.quantityType == QuantityType.WEIGHT ? " კგ." : " ც.")}</td>
             <td>{product.quantityType}</td>
@@ -382,6 +388,7 @@ import a from "file-saver";
 </table>
 
 <ProductModal 
+bind:editedQuantities={quantitiesFromProductModal}
 bind:show={showProductModal}
 bind:isChange={isChange}
 title={isChange ? 'რედაქტირება' : 'დამატება'}
@@ -410,6 +417,7 @@ sellingPrice={sellingPrice}
 bind:originalPrice={originalPrice}
 bind:quantityType={quantityType}
 bind:official={official}
+bind:availableAmount={availableAmount}
 />
 
 <DeleteModal

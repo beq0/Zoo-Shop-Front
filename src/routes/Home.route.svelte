@@ -1,7 +1,7 @@
 <script>
     import {HistoryService} from "../services/history.service";
     import { onMount } from 'svelte';
-import DetailedProducts from "../components/DetailedProducts.svelte";
+    import DetailedProducts from "../components/DetailedProducts.svelte";
     
     const historyService = HistoryService.getInstance();
     const date = new Date();
