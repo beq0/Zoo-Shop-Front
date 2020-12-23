@@ -149,7 +149,7 @@
                 name,
                 productType: productType,
                 sellingPrice,
-                originalPrice: quantitiesFromProductModal[0].originalPrice,
+                originalPrice: ArrayHelper.isNotEmpty(quantitiesFromProductModal) ? quantitiesFromProductModal[0].originalPrice : 0,
                 quantity: quantitiesFromProductModal,
                 quantityType,
                 official,
@@ -266,7 +266,9 @@
 </style>
 
 {#if show.showToolbar}
-<div class="toolbar" id="toolbar">
+<!-- svelte-ignore a11y-missing-attribute -->
+<iframe name="decoy_iframe" style="display:none;"></iframe>
+<form class="toolbar" id="toolbar" action="#" target="decoy_iframe" on:submit={filterProducts}>
     <div class="form-group toolbar-item toolbar">
         <span>კოდი:&emsp;</span>
         <input type="text" class="form-control" bind:value={filterCode}>
@@ -292,18 +294,20 @@
         <input type="number" class="form-control" bind:value={filterEndPrice}>
     </div>
 
+    <input type="submit" style="height: 0px; width: 0px; border: none; padding: 0px;" hidefocus="true" />
+    
     <!-- svelte-ignore a11y-missing-attribute -->
     <div title="ძებნა">
-        <input type="image" src="images/search.png" width="27px" height="27px" style="margin: 0 8px;"
+        <img src="images/search.png" width="27px" height="27px" style="margin: 0 8px; cursor: pointer;"
             on:click={filterProducts}>
     </div>
     
     <!-- svelte-ignore a11y-missing-attribute -->
-    <div  title="ფილტრის გასუფთავება">
-        <input type="image" src="images/clearFilters.ico" width="27px" height="27px" style="margin: 0 8px;"
+    <div title="ფილტრის გასუფთავება">
+        <img src="images/clearFilters.ico" width="27px" height="27px" style="margin: 0 8px; cursor: pointer;"
             on:click={clearFilters}>
     </div>
-</div>
+</form>
 {/if}
 
 <table class="table">
@@ -407,16 +411,13 @@ bind:submited={productModalSubmited}
 <SellModal
 bind:show={showSellModal}
 bind:_id={_id}
-bind:productCode={productCode}
 bind:productName={name}
-bind:productType={productType}
 bind:amount={amountToSell}
 bind:submited={sellModalSubmited}
 bind:quantity={quantity}
 sellingPrice={sellingPrice}
 bind:originalPrice={originalPrice}
 bind:quantityType={quantityType}
-bind:official={official}
 bind:availableAmount={availableAmount}
 />
 

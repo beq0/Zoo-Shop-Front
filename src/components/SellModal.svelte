@@ -8,8 +8,8 @@
       WEIGHT: "წონითი"
     }
 
-    export let show = false, _id, productCode = '', productName = '', productType = '', amount = null, quantity = null,
-    quantityType = QuantityType.COUNT, submited = false, originalPrice = null, sellingPrice = null, official = true, availableAmount = null;
+    export let show = false, _id, productName = '', amount = null, quantity = null,
+    quantityType = QuantityType.COUNT, submited = false, originalPrice = null, sellingPrice = null, availableAmount = null;
 
     let amountChanged = false, fullPriceChanged = false, sellingPriceChanged = false;
     let fullPrice = null;
