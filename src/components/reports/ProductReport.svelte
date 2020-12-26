@@ -15,6 +15,11 @@
     let ProductType = [
         "სხვა"
     ]
+
+    const QuantityType = {
+        COUNT: "ცალობითი",
+        WEIGHT: "წონითი"
+    }
   
     export let show;
   
@@ -23,7 +28,7 @@
   
     let filterCode = null, filterName = null, filterType = 'ყველა', filterStartPrice = null, filterEndPrice = null,
     filterStartLastChangeDate = null, filterEndlastChangeDate = null, filterOfficial = true;
-    let fileName = "პროდუქტები";
+    let fileName = "პროდუქცია";
     let showWarningModal = false, warningModalMessage = '';
     
     onMount(() => {
@@ -46,7 +51,7 @@
     }
     
     async function onSubmit() {
-        const columnNames = ['კოდი', 'სახელი', 'ტიპი', 'ჯამური გაყიდვის ფასი', 'ჯამური ყიდვის ფასი', 'გაყიდვის ფასი', 'ყიდვის ფასი', 
+        const columnNames = ['კოდი', 'სახელი', 'ტიპი', 'ჯამური გასაყიდი ფასი', 'ჯამური ასაღები ფასი', 'გასაყიდი ფასი', 'ასაღები ფასი', 
         'რაოდენობა', 'რაოდ. ტიპი', 'ოფიციალური', 'განახლების თარიღი', 'შექმნის თარიღი'];
         let filters = {
             code: filterCode,
@@ -65,26 +70,32 @@
             currRow.push(prod.code);
             currRow.push(prod.name);
             currRow.push(prod.productType);
-            currRow.push((prod.sellingPrice * prod.quantity).toFixed(2));
-            currRow.push((prod.originalPrice * prod.quantity).toFixed(2));
+            currRow.push((prod.sellingPrice * getWholeQuantity(prod)).toFixed(2));
+            currRow.push((prod.originalPrice * getWholeQuantity(prod)).toFixed(2));
             currRow.push(prod.sellingPrice);
             currRow.push(prod.originalPrice);
-            currRow.push(prod.quantity);
+            currRow.push(prod.quantity.reduce((res, qt) => { return res + qt.quantity + 
+                                                            (qt.quantityType == QuantityType.COUNT ? 'ც.' : 'კგ.') + 
+                                                            ' - ' + qt.originalPrice + '₾; '}, ''));
             currRow.push(prod.quantityType);
             currRow.push(prod.official ? "კი" : "არა");
             currRow.push(DateFormats.formatDateTime(prod.lastChangeDate));
             currRow.push(DateFormats.formatDateTime(prod.createDate));
             content.push(currRow);
         })
-        ExcelGenerator.saveWithOneSheet("პროდუქტები", "პროდუქტები", "ზ", fileName, fileName, columnNames, content)
+        ExcelGenerator.saveWithOneSheet("პროდუქცია", "პროდუქცია", "ზ", fileName, fileName, columnNames, content)
         onClose();
     }
   
     function onClose() {
         filterCode = null, filterName=null, filterType='ყველა', filterStartPrice=null, filterEndPrice=null;
         filterStartLastChangeDate = null, filterEndlastChangeDate = null, filterOfficial = true;
-        fileName = "პროდუქტები";
+        fileName = "პროდუქცია";
         show = false;
+    }
+
+    function getWholeQuantity(prod) {
+        return prod.quantity.reduce((sum1, qt) => { return sum1 + qt.quantity}, 0);
     }
   
 </script>
@@ -112,7 +123,7 @@
 <div class="popup active" id="popup-1">
     <div class="overlay" on:click={onClose}></div>
         <div class="content">  
-            <h5 class="modal-title">პროდუქტების რეპორტი</h5>
+            <h5 class="modal-title">პროდუქციის რეპორტი</h5>
             <hr>
             <div class="form-group">
                 <div>ფაილის სახელი:&emsp;</div>

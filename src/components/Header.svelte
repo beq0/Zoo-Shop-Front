@@ -56,7 +56,7 @@
 
     <li class="nav-item">
         <a class="{'nav-link ' + (pathName === '/products' ? 'active' : '')}" id="pills-profile-tab" data-toggle="pill" href="products" role="tab" aria-controls="products" use:link
-        on:click={() => pathName='/products'}>პროდუქტები</a>
+        on:click={() => pathName='/products'}>პროდუქცია</a>
     </li>
 
     <li class="nav-item">

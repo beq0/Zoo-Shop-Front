@@ -10,6 +10,7 @@
     import { navigate } from "svelte-routing";
     import { ArrayHelper } from "../utils/ArrayHelper";
     import { NumberHelper } from "../utils/NumberHelper";
+    import { AutoCompleteHelper } from "../utils/AutoCompleteHelper"
 
     export let show = {};
 
@@ -29,9 +30,9 @@
     }
     
     let productService = ProductService.getInstance(), parameterService = ParameterService.getInstance();
-
-    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'ჯამ. გაყ. ფასი', 'ჯამ. ყიდ. ფასი', 'გაყ. ფასი', 'ყიდ. ფასი', 'რაოდენობა', 'რაოდ. ტიპი', 'განახ. თარიღი', 'შექმნ. თარიღი'];
-    let filterCode = '', filterName='', filterType='', filterStartPrice=null, filterEndPrice=null;
+    
+    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'ჯამ. გასა. ფასი', 'ჯამ. ასა. ფასი', 'გასა. ფასი', 'ასა. ფასი', 'რაოდენობა', 'რაოდ. ტიპი', 'განახ. თარიღი', 'შექმნ. თარიღი'];
+    let toolbarShown = false, filterCode = '', filterName='', filterType='', filterStartPrice=null, filterEndPrice=null;
     let showProductModal = false, isChange = false, showSellModal = false;
     let _id, productCode = null, name = null, productType = ProductType[0], sellingPrice = null, 
             originalPrice = null, quantity = null, quantityType = QuantityType.COUNT, official = true;
@@ -51,10 +52,12 @@
         show.showToolbar = filterCode || filterName || filterType || filterEndPrice || filterStartPrice;
     }
 
-    let products = [], allProducts = [];
+    let products = [], allProducts = [], allProductCodes = [], allProductNames = [];
     onMount(async () => {
         allProducts = await productService.getProducts();
         products = allProducts;
+        allProductCodes = allProducts.map(prod => prod.code);
+        allProductNames = allProducts.map(prod => prod.name);
 
         initializeParameters();
         if(show.showToolbar) {
@@ -118,7 +121,6 @@
         official = product.official;
         indexOfSelectedProduct = i;
         availableAmount = getWholeQuantity(product);
-        console.log(availableAmount);
         showSellModal = true;
     }
 
@@ -139,6 +141,18 @@
 
         if (deleteModalSubmited) {
             deleteModalIsSubmited();
+        }
+
+        if (show.showToolbar) {
+            if (!toolbarShown) {
+                setTimeout(() => {
+                    AutoCompleteHelper.autocomplete(document.getElementById("product-code-filter"), allProductCodes, (v) => filterCode = v);
+                    AutoCompleteHelper.autocomplete(document.getElementById("product-name-filter"), allProductNames, (v) => filterName = v);
+                }, 150);
+            }
+            toolbarShown = show.showToolbar;
+        } else {
+            toolbarShown = false;
         }
     }
 
@@ -268,15 +282,15 @@
 {#if show.showToolbar}
 <!-- svelte-ignore a11y-missing-attribute -->
 <iframe name="decoy_iframe" style="display:none;"></iframe>
-<form class="toolbar" id="toolbar" action="#" target="decoy_iframe" on:submit={filterProducts}>
-    <div class="form-group toolbar-item toolbar">
+<form autocomplete="off" class="toolbar" id="toolbar" action="#" target="decoy_iframe" on:submit={filterProducts}>
+    <div class="form-group toolbar-item toolbar autocomplete">
         <span>კოდი:&emsp;</span>
-        <input type="text" class="form-control" bind:value={filterCode}>
+        <input id="product-code-filter" type="text" class="form-control" bind:value={filterCode}>
     </div>
     
-    <div class="form-group toolbar-item toolbar">
+    <div class="form-group toolbar-item toolbar  autocomplete">
         <span>სახელი:&emsp;</span>
-        <input type="text" class="form-control" bind:value={filterName}>
+        <input id="product-name-filter" type="text" class="form-control" bind:value={filterName}>
     </div>
 
     <div class="toolbar-item toolbar">

@@ -1,22 +1,34 @@
 <script>
     import {HistoryService} from "../services/history.service";
+    import {ProductService} from "../services/product.service";
     import { onMount } from 'svelte';
     import DetailedProducts from "../components/DetailedProducts.svelte";
+    import { AutoCompleteHelper } from "../utils/AutoCompleteHelper";
     
     const historyService = HistoryService.getInstance();
+    const productService = ProductService.getInstance();
     const date = new Date();
 
     let filterName='', filterType='', filterStartDate=new Date(date.getFullYear(), 0, 1), filterEndDate=null;
     let productsSold = {}, yearlyBenefit = 0, monthlyBenefit = 0, dailyBenefit = 0, yearlySellingPrice = 0, monthlySellingPrice = 0, dailySellingPrice = 0;
     let showDetailedProducts = false, detailedAmounts = {};
 
+    let allProducts = [], allProductNames = [];
+    
     onMount(async () => {
+        allProducts = await productService.getProducts();
+        allProductNames = allProducts.map(prod => prod.name);
+
         addEventListener("keyup", (event) => {
             if (event.key === 'Enter') {
                 filterData();
             }
         });
         filterData();
+
+        setTimeout(() => {
+            AutoCompleteHelper.autocomplete(document.getElementById("product-name-filter"), allProductNames, (v) => filterName = v);
+        }, 700);
     })
 
     async function filterData() {
@@ -213,9 +225,9 @@
     <div>
         <div class="toolbar">
             <div class="toolbar-item">
-                <div class="filter-pair">
+                <div class="filter-pair autocomplete">
                     <div class="filter-header">სახელი:&emsp;</div>
-                    <input type="text" class="form-control" bind:value={filterName}>
+                    <input id="product-name-filter" type="text" class="form-control" bind:value={filterName}>
                 </div>
             </div>
         
@@ -260,7 +272,7 @@
     <div class="results">
         <div class="result-pair">
             <div class="result-header">
-                გაყიდული პროდუქტების რაოდენობა:
+                გაყიდული პროდუქციის რაოდენობა:
             </div>
             <div class="result-result result-count">
                 <div>{Object.keys(productsSold).length}</div>
