@@ -1,5 +1,5 @@
 <script>
-    import { onMount } from 'svelte';
+    import { onDestroy, onMount } from 'svelte';
     import WarningModal from './WarningModal.svelte'
 
     export let show = false, toDeleteId, service, submited;
@@ -7,14 +7,19 @@
     let showWarningModal = false, warningModalMessage = '';
 
     onMount(() => {
-        addEventListener("keyup", (event) => {
+        window.deleteModalListener = true;
+        window.addEventListener("keyup", (event) => {
             if (show && event.key === 'Enter') {
                 onSubmit();
             }
             if (show && event.key === 'Escape') {
                 onClose();
             }
-        });
+        })
+    });
+
+    onDestroy(() => {
+        
     });
     
     function onClose() {

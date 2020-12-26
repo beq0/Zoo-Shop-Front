@@ -2,13 +2,17 @@
     import {link} from "svelte-routing";
     import {DeviceDetectorService} from "../services/deviceDetector.service";
 
-    let pathName = '/home';
+    export let pathName = '/home';
     export let show = {};
   
     $: {
         if(DeviceDetectorService.isBrowser) {
             pathName = window.location.pathname;
         }
+    }
+
+    function focusWindow(event) {
+        event.path[0].blur();
     }
     
 </script>
@@ -51,22 +55,27 @@
 
     <li class="nav-item">
         <a class="{'nav-link ' + (pathName === '/home' ? 'active' : '')}" id="pills-home-tab" data-toggle="pill" href="home" role="tab" aria-controls="home" use:link
-        on:click={() => pathName='/home'}>მთავარი</a>
+        on:click={() => pathName='/home'} on:focus={focusWindow}>მთავარი</a>
     </li>
 
     <li class="nav-item">
         <a class="{'nav-link ' + (pathName === '/products' ? 'active' : '')}" id="pills-profile-tab" data-toggle="pill" href="products" role="tab" aria-controls="products" use:link
-        on:click={() => pathName='/products'}>პროდუქტები</a>
+        on:click={() => pathName='/products'} on:focus={focusWindow}>პროდუქტები</a>
     </li>
 
     <li class="nav-item">
         <a class="{'nav-link ' + (pathName === '/history' ? 'active' : '')}" id="pills-contact-tab" data-toggle="pill" href="history" role="tab" aria-controls="histroy" use:link
-        on:click={() => pathName='/history'}>ისტორია</a>
+        on:click={() => pathName='/history'} on:focus={focusWindow}>ისტორია</a>
+    </li>
+
+    <li class="nav-item">
+        <a class="{'nav-link ' + (pathName === '/parameter' ? 'active' : '')}" id="pills-contact-tab" data-toggle="pill" href="parameter" role="tab" aria-controls="parameter" use:link
+        on:click={() => pathName='/parameter'} on:focus={focusWindow}>პარამეტრები</a>
     </li>
 
     <li class="nav-item lastItem">
-        <a class="{'nav-link ' + (pathName === '/parameter' ? 'active' : '')}" id="pills-contact-tab" data-toggle="pill" href="parameter" role="tab" aria-controls="parameter" use:link
-        on:click={() => pathName='/parameter'}>პარამეტრები</a>
+        <a class="{'nav-link ' + (pathName === '/scanner' ? 'active' : '')}" id="pills-contact-tab" data-toggle="pill" href="scanner" role="tab" aria-controls="scanner" use:link
+        on:click={() => pathName='/scanner'} on:focus={focusWindow}>გაყიდვა</a>
     </li>
 
     {#if pathName === '/products' || pathName === '/history' || pathName === '/parameter'}
