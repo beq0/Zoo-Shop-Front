@@ -7,7 +7,6 @@
     let showWarningModal = false, warningModalMessage = '';
 
     onMount(() => {
-        window.deleteModalListener = true;
         window.addEventListener("keyup", (event) => {
             if (show && event.key === 'Enter') {
                 onSubmit();

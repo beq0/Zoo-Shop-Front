@@ -60,7 +60,7 @@
 
     <li class="nav-item">
         <a class="{'nav-link ' + (pathName === '/products' ? 'active' : '')}" id="pills-profile-tab" data-toggle="pill" href="products" role="tab" aria-controls="products" use:link
-        on:click={() => pathName='/products'} on:focus={focusWindow}>პროდუქტები</a>
+        on:click={() => pathName='/products'} on:focus={focusWindow}>პროდუქცია</a>
     </li>
 
     <li class="nav-item">

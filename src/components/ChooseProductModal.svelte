@@ -1,16 +1,16 @@
 <script>
     import { onMount } from "svelte";
+    import { AutoCompleteHelper } from "../utils/AutoCompleteHelper";
 
     export let show;
     export let products;
     export let reverseProducts;
     export let code;
     export let added;
+    let suggested = false;
     let name;
     let names = [];
     let codes = [];
-    let showCodeSuggestion = false;
-    let showNameSuggestion = false;
 
     function onClose() {
         code = undefined;
@@ -19,6 +19,7 @@
     }
 
     function onSubmit() {
+        if(!products.has(code)) return;
         added = true;
         show = !show;
     }
@@ -26,6 +27,31 @@
     onMount(() => {
         codes = Array.from(products.keys());
         names = Array.from(products.values());
+
+        setTimeout(() => {
+            AutoCompleteHelper.autocomplete(document.getElementById("_code"), codes, (v) => {
+                suggested = true;
+                code = v;
+                name = products.get(v);
+            });
+            AutoCompleteHelper.autocomplete(document.getElementById("_name"), names, (v) => {
+                suggested = true;
+                name = v;
+                code = reverseProducts.get(v);
+            });
+        }, 700);
+
+        window.addEventListener("keyup", (event) => {
+            if (show && event.key === 'Enter') {
+                if(!suggested) {
+                    onSubmit();
+                }
+                suggested = false;
+            }
+            if (show && event.key === 'Escape') {
+                onClose();
+            }
+        })
     });
 </script>
 
@@ -54,42 +80,16 @@
         <hr>
         <div class="form-group">
             <div class="label">კოდი:</div>
-            <input type="number" class="form-control" bind:value={code} on:keyup={() => {
-                showCodeSuggestion = true;
-            }}>
+            <div class="autocomplete">
+                <input id="_code" type="text" autocomplete="off" class="form-control" bind:value={code}>
+            </div>
         </div>
-        {#if showCodeSuggestion}
-            {#each codes.filter((elem)=>{
-                return ("" + elem).includes("" + code);
-            }) as c}
-                <div on:click={() => {
-                    code = c; 
-                    name = products.get(c);
-                    showCodeSuggestion = false;
-                }}>
-                    {c}
-                </div>
-            {/each}
-        {/if}
-        <div class="form-group">
+        <div class="form-group autocomplete">
             <div class="label">სახელი:</div>
-            <input type="text" class="form-control" bind:value={name} on:keyup={() => {
-                showNameSuggestion = true;
-            }}>
+            <div class="autocomplete">
+                <input id="_name" type="text" autocomplete="off" class="form-control" bind:value={name}>
+            </div>
         </div>
-        {#if showNameSuggestion}
-            {#each names.filter((elem)=> {
-                return elem.includes(name);
-            }) as n}
-                <div on:click={() => {
-                    name = n;
-                    code = reverseProducts.get(n);
-                    showNameSuggestion = false;   
-                }}>
-                    {n}
-                </div>
-            {/each}
-        {/if}
         <div>
             <button class="btn btn-primary confirmButton" on:click={onSubmit}>დასტური</button>
             <button class="btn btn-primary closeButton" on:click={onClose}>დახურვა</button>

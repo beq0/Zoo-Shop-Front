@@ -152,6 +152,7 @@ import WarningModal from "../components/WarningModal.svelte";
     }
 
     .financial-td {
+        border-top: 0px;
         text-align: end;
     }
 </style>
@@ -217,7 +218,7 @@ import WarningModal from "../components/WarningModal.svelte";
             <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
-            <td class="financial-id">{sum}</td>
+            <td class="financial-td">{sum}₾</td>
             <td class="sum-empty-td sum-td"></td>
         </tr>
     </tbody>

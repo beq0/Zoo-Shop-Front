@@ -145,7 +145,9 @@
 </style>
 
 {#if show.showToolbar}
-<div class="toolbar" id="toolbar">
+<!-- svelte-ignore a11y-missing-attribute -->
+<iframe name="decoy_iframe" style="display:none;"></iframe>
+<form class="toolbar" id="toolbar" action="#" target="decoy_iframe" on:submit={filterParameters}>
     <div class="form-group toolbar-item toolbar">
         <span>სახელი:&emsp;</span>
         <input type="text" class="form-control" bind:value={filterName}>
@@ -166,18 +168,20 @@
         <input type="text" class="form-control" bind:value={filterValue}>
     </div>
 
+    <input type="submit" style="height: 0px; width: 0px; border: none; padding: 0px;" hidefocus="true" />
+    
     <!-- svelte-ignore a11y-missing-attribute -->
     <div  title="ძებნა">
-        <input type="image" src="images/search.png" width="27px" height="27px" style="margin: 0 8px;"
+        <img src="images/search.png" width="27px" height="27px" style="margin: 0 8px; cursor: pointer;"
             on:click={filterParameters}>
     </div>
     
     <!-- svelte-ignore a11y-missing-attribute -->
     <div  title="ფილტრის გასუფთავება">
-        <input type="image" src="images/clearFilters.ico" width="27px" height="27px" style="margin: 0 8px;"
+        <img src="images/clearFilters.ico" width="27px" height="27px" style="margin: 0 8px; cursor: pointer;"
             on:click={clearFilters}>
     </div>
-</div>
+</form>
 {/if}
 
 <table class="table">

@@ -1,26 +1,38 @@
 <script>
     import {HistoryService} from "../services/history.service";
+    import {ProductService} from "../services/product.service";
     import { onMount } from 'svelte';
     import DetailedProducts from "../components/DetailedProducts.svelte";
+    import { AutoCompleteHelper } from "../utils/AutoCompleteHelper";
     
     const historyService = HistoryService.getInstance();
+    const productService = ProductService.getInstance();
     const date = new Date();
 
     let filterName='', filterType='', filterStartDate=new Date(date.getFullYear(), 0, 1), filterEndDate=null;
-    let productsSold = {}, yearlyBenefit = 0, monthlyBenefit = 0, dailyBenefit = 0;
+    let productsSold = {}, yearlyBenefit = 0, monthlyBenefit = 0, dailyBenefit = 0, yearlySellingPrice = 0, monthlySellingPrice = 0, dailySellingPrice = 0;
     let showDetailedProducts = false, detailedAmounts = {};
 
+    let allProducts = [], allProductNames = [];
+    
     onMount(async () => {
+        allProducts = await productService.getProducts();
+        allProductNames = allProducts.map(prod => prod.name);
+
         addEventListener("keyup", (event) => {
             if (event.key === 'Enter') {
                 filterData();
             }
         });
         filterData();
+
+        setTimeout(() => {
+            AutoCompleteHelper.autocomplete(document.getElementById("product-name-filter"), allProductNames, (v) => filterName = v);
+        }, 700);
     })
 
     async function filterData() {
-        productsSold = {}, yearlyBenefit = 0, monthlyBenefit = 0, dailyBenefit = 0, detailedAmounts = {};
+        productsSold = {}, yearlyBenefit = 0, monthlyBenefit = 0, dailyBenefit = 0, yearlySellingPrice = 0, monthlySellingPrice = 0, dailySellingPrice = 0, detailedAmounts = {};
         let filters = {
             productName: filterName,
             productType: filterType,
@@ -34,21 +46,35 @@
                 productsSold[history.productName] = {
                     amount: 0,
                     yearlyBenefit: 0,
+                    yearlySellingPrice: 0,
                     monthlyBenefit: 0,
-                    dailyBenefit: 0
+                    monthlySellingPrice: 0,
+                    dailyBenefit: 0,
+                    dailySellingPrice: 0
                 };
             }
-            productsSold[history.productName].amount += history.amount;
-            productsSold[history.productName].yearlyBenefit += history.benefit;
-            if (date.getFullYear() === history.sellDate.getFullYear() && date.getMonth() === history.sellDate.getMonth()) 
-                productsSold[history.productName].monthlyBenefit += history.benefit;
-            if (new Date().toDateString() == history.sellDate.toDateString()) 
-                productsSold[history.productName].dailyBenefit += history.benefit;
+            const currAmount = history.amount;
+            const currBenefit = history.benefit;
+            const currWholeSellingPrice = history.sellingPrice * currAmount;
+            productsSold[history.productName].amount += currAmount;
+            productsSold[history.productName].yearlyBenefit += currBenefit;
+            productsSold[history.productName].yearlySellingPrice += currWholeSellingPrice;
+            if (date.getFullYear() === history.sellDate.getFullYear() && date.getMonth() === history.sellDate.getMonth()) {
+                productsSold[history.productName].monthlyBenefit += currBenefit;
+                productsSold[history.productName].monthlySellingPrice += currWholeSellingPrice;
+            }
+            if (new Date().toDateString() == history.sellDate.toDateString()) { 
+                productsSold[history.productName].dailyBenefit += currBenefit;
+                productsSold[history.productName].dailySellingPrice += currWholeSellingPrice;
+            }
         })
         for (const [key, value] of Object.entries(productsSold)) {
             yearlyBenefit += value.yearlyBenefit;
+            yearlySellingPrice += value.yearlySellingPrice;
             monthlyBenefit += value.monthlyBenefit;
+            monthlySellingPrice += value.monthlySellingPrice;
             dailyBenefit += value.dailyBenefit;
+            dailySellingPrice += value.dailySellingPrice;
             if (!(key in detailedAmounts)) detailedAmounts[key] = 0;
             detailedAmounts[key] += value.amount;
         }
@@ -132,8 +158,28 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        height: 500px;   
+        height: 550px;   
         margin-top: 50px;   
+    }
+
+    .result-info {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .result-info-header {
+        font-size: 20px;
+        font-style: italic;
+        font-family: inherit;
+        font-weight: bold;
+    }
+
+    .result-info-pairs {
+        display: flex;
+        flex-direction: row;
+        width: 250px;
+        justify-content: space-between;
     }
 
     .result-pair {
@@ -179,9 +225,9 @@
     <div>
         <div class="toolbar">
             <div class="toolbar-item">
-                <div class="filter-pair">
+                <div class="filter-pair autocomplete">
                     <div class="filter-header">სახელი:&emsp;</div>
-                    <input type="text" class="form-control" bind:value={filterName}>
+                    <input id="product-name-filter" type="text" class="form-control" bind:value={filterName}>
                 </div>
             </div>
         
@@ -226,42 +272,93 @@
     <div class="results">
         <div class="result-pair">
             <div class="result-header">
-                გაყიდული პროდუქტების რაოდენობა:
+                გაყიდული პროდუქციის რაოდენობა:
             </div>
             <div class="result-result result-count">
                 <div>{Object.keys(productsSold).length}</div>
                 <div style="width:20px;"></div>
-                <button type="button" class="btn btn-primary btn-details" on:click={() => {showDetailedProducts = true}}>დეტალურად ნახვა</button>
+                <button type="button" class="btn btn-primary btn-details" on:click={() => {showDetailedProducts = true}}>დეტალურად</button>
             </div>
         </div>
         
-        <div class="result-pair">
-            <div class="result-header">
-                წლიური მოგება:
-            </div>
-            <div class="result-result result-winning">
-                {yearlyBenefit.toFixed(2)} ₾
+        <div class="result-info">
+            <div class="result-info-header">
+                წლიური
+            </div>  
+            
+            <div class="result-info-pairs">
+                <div class="result-pair">
+                    <div class="result-header">
+                        მოგება
+                    </div>
+                    <div class="result-result result-winning">
+                        {yearlyBenefit.toFixed(2)} ₾
+                    </div>
+                </div>
+        
+                <div class="result-pair">
+                    <div class="result-header">
+                        ნავაჭრი
+                    </div>
+                    <div class="result-result">
+                        {yearlySellingPrice.toFixed(2)} ₾
+                    </div>
+                </div>
             </div>
         </div>
         
-        <div class="result-pair">
-            <div class="result-header">
-                თვიური მოგება:
-            </div>
-            <div class="result-result result-winning">
-                {monthlyBenefit.toFixed(2)} ₾
+        <div class="result-info">
+            <div class="result-info-header">
+                თვიური
+            </div>  
+            
+            <div class="result-info-pairs">
+                <div class="result-pair">
+                    <div class="result-header">
+                        მოგება
+                    </div>
+                    <div class="result-result result-winning">
+                        {monthlyBenefit.toFixed(2)} ₾
+                    </div>
+                </div>
+
+                <div class="result-pair">
+                    <div class="result-header">
+                        ნავაჭრი
+                    </div>
+                    <div class="result-result">
+                        {monthlySellingPrice.toFixed(2)} ₾
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="result-pair">
-            <div class="result-header">
-                დღიური მოგება:
-            </div>
-            <div class="result-result result-winning">
-                {dailyBenefit.toFixed(2)} ₾
+        <div class="result-info">
+            <div class="result-info-header">
+                დღიური
+            </div>  
+            
+            <div class="result-info-pairs">
+                <div class="result-pair">
+                    <div class="result-header">
+                        მოგება
+                    </div>
+                    <div class="result-result result-winning">
+                        {dailyBenefit.toFixed(2)} ₾
+                    </div>
+                </div>
+
+                <div class="result-pair">
+                    <div class="result-header">
+                        ნავაჭრი
+                    </div>
+                    <div class="result-result">
+                        {dailySellingPrice.toFixed(2)} ₾
+                    </div>
+                </div>
             </div>
         </div>
-        
+
     </div>
 </div>
 

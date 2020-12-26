@@ -174,7 +174,7 @@
     </div>
     
     <div class="form-group">
-      <div class="label">ყიდვის&nbsp;ფასი:</div>
+      <div class="label">ასაღები&nbsp;ფასი:</div>
       <input type="number" class="form-control" bind:value={originalPrice} readonly>
     </div>
     
@@ -194,7 +194,7 @@
       <div class="quantities">
         <div class="quantities-info">
           <div class="quantity-info-width">რაოდენობა</div>
-          <div class="quantity-info-width">ყიდვის ფასი</div>
+          <div class="quantity-info-width">ასაღები ფასი</div>
         </div>
         <div id="quantity-pairs" style="{editedQuantities.length <= 3 ? "" : "overflow-y: scroll;"}">
           {#each editedQuantities as qt, i}
@@ -203,6 +203,8 @@
             <input type="number" class="form-control" style="width: {editedQuantities.length <= 3 ? "150" : "140"}px;" bind:value={qt.originalPrice}>
             <!-- svelte-ignore a11y-missing-attribute -->
             <input type="image" src="images/delete.png" style="margin-left: 5px;" width="23px" height="23px" on:click={() => {
+              editedQuantities.splice(i, 1);
+              editedQuantities = editedQuantities;
             }}> 
           </div>
           {/each}

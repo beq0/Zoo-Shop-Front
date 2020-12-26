@@ -46,7 +46,7 @@
     }
     
     async function onSubmit() {
-        const columnNames = ['კოდი', 'სახელი', 'ტიპი', 'გაყიდვის თარიღი', 'გაყიდული რაოდენობა', 'ყიდვის ფასი', 'გაყიდვის ფასი', 'მოგება'];
+        const columnNames = ['კოდი', 'სახელი', 'ტიპი', 'გაყიდვის თარიღი', 'გაყიდული რაოდენობა', 'ასაღები ფასი', 'გასაყიდი ფასი', 'მოგება'];
         let filters = {
             productCode: filterProductCode,
             productName: filterProductName,

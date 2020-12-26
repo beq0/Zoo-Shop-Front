@@ -2,12 +2,20 @@
     import {DeviceDetectorService} from "../services/deviceDetector.service";
     import { navigate } from "svelte-routing";
     import {HistoryService} from "../services/history.service";
+    import {ProductService} from "../services/product.service";
     import { onMount } from 'svelte';
     import { DateFormats } from "../utils/DateFormats";
     import HistoryReport from "../components/reports/HistoryReport.svelte";
     import DeleteModal from "../components/DeleteModal.svelte";
-    
+    import {ObjectHelper} from "../utils/ObjectHelper"
+    import {AutoCompleteHelper} from "../utils/AutoCompleteHelper"
+
     export let show = {};
+    
+    const QuantityType = {
+        COUNT: "ცალობითი",
+        WEIGHT: "წონითი"
+    }
 
     const DEFAULT_PAGINATION_LIMIT = 5;
     const PAGES_BEFORE_AND_AFTER = 4;
@@ -15,44 +23,44 @@
     
     const today = new Date();
     let historyService = HistoryService.getInstance();
+    let productService = ProductService.getInstance();
 
     let deleteModalShow = false, deleteModalSubmited = false, toDeleteId = null;
-    let filterCode = '', filterName='', filterType='', filterStartDate=null, filterEndDate=null;
-    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'თარიღი', 'რაოდენობა', 'გაყიდვის ფასი', 'ყიდვის ფასი', 'მოგება'];
+    let toolbarShown = false, filterCode = '', filterName='', filterType='', filterStartDate=null, filterEndDate=null;
+    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'თარიღი', 'რაოდენობა', 'გასაყიდი ფასი', 'ასაღები ფასი', 'მოგება'];
     let marked = DateFormats.formatDate(today);
     let pages = [DateFormats.formatDate(new Date(today.getTime() - 48 * HOUR_IN_MILISECONDS)), DateFormats.formatDate(new Date(today.getTime() - 24 * HOUR_IN_MILISECONDS)), DateFormats.formatDate(today)];
 
-    if(DeviceDetectorService.isBrowser) {
+    let histories = [], allHistories = [];
+
+    let allProducts = [], allProductCodes = [], allProductNames = [];
+    onMount(async () => {
+        allProducts = await productService.getProducts();
+        allProductCodes = allProducts.map(prod => prod.code);
+        allProductNames = allProducts.map(prod => prod.name);
+
+        if(DeviceDetectorService.isBrowser) {
         let url = new URL(window.location.href);
         marked = url.searchParams.get('date') || DateFormats.formatDate(today);
+        filterCode = url.searchParams.get('code') || '';
         filterName = url.searchParams.get('name') || '';
         filterType = url.searchParams.get('type') || '';
         filterStartDate = url.searchParams.get('start') || null;
         filterEndDate = url.searchParams.get('end') || null;
-        show.showToolbar = filterType || filterName;
+        show.showToolbar = filterType || filterName || filterCode;
     }
-
-    let histories = [], allHistories = [];
-    
-    onMount(async () => {
-        
     })
 
     async function filterHistory() {
         if(!DeviceDetectorService.isBrowser) return;
         marked = DateFormats.formatDate(today);
         let url = new URL(window.location.href);
+        url.searchParams.set('code', filterCode || '');
         url.searchParams.set('name', filterName || '');
         url.searchParams.set('type', filterType || '');
         url.searchParams.set('start', filterStartDate || '');
         url.searchParams.set('end', filterEndDate || '');
         navigate(url.toString());
-        let filters = {
-            productName: filterName,
-            productType: filterType,
-            sellDateFrom: filterStartDate,
-            sellDateTo: filterEndDate
-        }
         getFilteredData(true);
     }
 
@@ -73,7 +81,7 @@
     }
 
     function clearFilters() {
-        filterName='', filterType='', filterStartDate=null, filterEndDate=null;
+        filterCode = '', filterName='', filterType='', filterStartDate=null, filterEndDate=null;
     }
 
     function onBack() {
@@ -105,6 +113,20 @@
 
         if (deleteModalSubmited) {
             deleteModalIsSubmited();
+        }
+    }
+
+    $: {
+        if (show.showToolbar) {
+            if (!toolbarShown) {
+                setTimeout(() => {
+                    AutoCompleteHelper.autocomplete(document.getElementById("product-code-filter"), allProductCodes, (v) => filterCode = v);
+                    AutoCompleteHelper.autocomplete(document.getElementById("product-name-filter"), allProductNames, (v) => filterName = v);
+                }, 150);
+            }
+            toolbarShown = show.showToolbar;
+        } else {
+            toolbarShown = false;
         }
     }
 
@@ -166,18 +188,36 @@
         justify-content: flex-end;
     }
 
+    .sum-tr {
+        background-color: lightsteelblue;
+    }
+
+    .sum-td {
+        font-weight: bold;
+    }
+
+    .sum-empty-td {
+        border: none;
+    }
+
+    .financial-td {
+        text-align: end;
+    }
+
 </style>
 
 {#if show.showToolbar}
-<div class="toolbar" id="toolbar">
-    <div class="form-group toolbar-item toolbar">
+<!-- svelte-ignore a11y-missing-attribute -->
+<iframe name="decoy_iframe" style="display:none;"></iframe>
+<form autocomplete="off" class="toolbar" id="toolbar" action="#" target="decoy_iframe" on:submit={filterHistory}>
+    <div class="form-group toolbar-item toolbar autocomplete">
         <span>კოდი:&emsp;</span>
-        <input type="text" class="form-control" bind:value={filterCode}>
+        <input id="product-code-filter" type="text" class="form-control" bind:value={filterCode}>
     </div>
 
-    <div class="form-group toolbar-item toolbar">
+    <div class="form-group toolbar-item toolbar autocomplete">
         <span>სახელი:&emsp;</span>
-        <input type="text" class="form-control" bind:value={filterName}>
+        <input id="product-name-filter" type="text" class="form-control" bind:value={filterName}>
     </div>
 
     <div class="toolbar-item toolbar">
@@ -195,18 +235,20 @@
         <input type="date" class="form-control date-filters" bind:value={filterEndDate}>
     </div>
 
+    <input type="submit" style="height: 0px; width: 0px; border: none; padding: 0px;" hidefocus="true" />
+    
     <!-- svelte-ignore a11y-missing-attribute -->
     <div title="ძებნა">
-        <input type="image" src="images/search.png" width="27px" height="27px" style="margin: 0 8px;"
+        <img src="images/search.png" width="27px" height="27px" style="margin: 0 8px; cursor: pointer;"
             on:click={filterHistory}>
     </div>
     
     <!-- svelte-ignore a11y-missing-attribute -->
     <div title="ფილტრის გასუფთავება">
-        <input type="image" src="images/clearFilters.ico" width="27px" height="27px" style="margin: 0 8px;"
+        <img src="images/clearFilters.ico" width="27px" height="27px" style="margin: 0 8px; cursor: pointer;"
             on:click={clearFilters}>
     </div>
-</div>
+</form>
 {/if}
 
 <table class="table">
@@ -219,6 +261,21 @@
     </tr>
     </thead>
     <tbody>
+        <tr class="sum-tr">
+            <td class="sum-empty-td sum-td">ჯამური:</td>
+            <td class="sum-empty-td sum-td"></td>
+            <td class="sum-empty-td sum-td"></td>
+            <td class="sum-empty-td sum-td"></td>
+            <td class="financial-td sum-td">{
+                histories.reduce((sum, hist) => { return (ObjectHelper.isNullOrUndefined(hist.quantityType) || hist.quantityType == QuantityType.COUNT) ? sum + hist.amount : sum }, 0) + " ც; " +
+                histories.reduce((sum, hist) => { return (ObjectHelper.isNotNullOrUndefined(hist.quantityType) && hist.quantityType == QuantityType.WEIGHT) ? sum + hist.amount : sum }, 0).toFixed(3) + " კგ."
+            }
+            </td>
+            <td class="financial-td sum-td">{histories.reduce((sum, hist) => { return sum + hist.sellingPrice }, 0).toFixed(2)} ₾</td>
+            <td class="financial-td sum-td">{histories.reduce((sum, hist) => { return sum + hist.originalPrice }, 0).toFixed(2)} ₾</td>
+            <td class="financial-td sum-td">{histories.reduce((sum, hist) => { return sum + hist.benefit }, 0).toFixed(2)} ₾</td>
+            <td class="sum-empty-td sum-td"></td>
+        </tr>
         {#each histories as history, i}
         <tr>
             <td>{history.productCode}</td>
