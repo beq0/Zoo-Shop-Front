@@ -26,7 +26,7 @@
 
     .amounts {
         max-height: 400px;
-        overflow-y: scroll;
+        overflow-y: auto;
         font-size: 17px;
     }
     

@@ -139,6 +139,18 @@ import WarningModal from "../components/WarningModal.svelte";
         font-weight: normal;
     }
 
+    .financial-input-div {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .financial-input-div > div {
+        font-size: 22px;
+        font-weight: bold;
+        font-style: italic;
+    }
+
     .sum-tr {
         background-color: lightsteelblue;
     }
@@ -154,6 +166,10 @@ import WarningModal from "../components/WarningModal.svelte";
     .financial-td {
         border-top: 0px;
         text-align: end;
+    }
+
+    .confirm-buttons {
+        text-align: center;
     }
 </style>
 
@@ -177,11 +193,14 @@ import WarningModal from "../components/WarningModal.svelte";
             <td>{key}</td>
             <td>{productsMap[key].name}</td>
             <td>
-                <input type="number" class="form-control" bind:value={pricesByKey[key]} on:focus={onFocus} on:keyup={
-                    () => {
-                        dispatchEvent(quantityOrPriceChangeEvent);
-                    }
-                }>
+                <div class="financial-input-div">
+                    <input type="number" class="form-control" bind:value={pricesByKey[key]} on:focus={onFocus} on:keyup={
+                        () => {
+                            dispatchEvent(quantityOrPriceChangeEvent);
+                        }
+                    }>
+                   <div>&nbsp;₾</div>
+                </div>
             </td>
             <td>
                 <input type="number" class="form-control" bind:value={items[key]} on:focus={onFocus} on:keyup={
@@ -193,11 +212,14 @@ import WarningModal from "../components/WarningModal.svelte";
             </td>
             <td>{productsMap[key].quantityType}</td>
             <td>
-                <input type="number" class="form-control" bind:value={totalPricesByKey[key]} on:focus={onFocus} on:keyup={
-                    () => {
-                        dispatchEvent(totalPriceChangeEvent);     
-                    }
-                }>
+                <div class="financial-input-div">
+                    <input type="number" class="form-control" bind:value={totalPricesByKey[key]} on:focus={onFocus} on:keyup={
+                        () => {
+                            dispatchEvent(totalPriceChangeEvent);     
+                        }
+                    }>
+                    <div>&nbsp;₾</div>
+                </div>
             </td>
             <td style="padding-right: 5px;">
                 <div class="actionButtonsDiv">
@@ -218,15 +240,15 @@ import WarningModal from "../components/WarningModal.svelte";
             <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
-            <td class="financial-td">{sum}₾</td>
+            <td class="financial-td sum-td">{sum} ₾</td>
             <td class="sum-empty-td sum-td"></td>
         </tr>
     </tbody>
 </table>
 
 {#if showButtons}
-    <div>
-        <button class="btn btn-primary confirmButton" on:click={onSell}>გაყიდვა</button>
+    <div class="confirm-buttons">
+        <button class="btn btn-primary confirmButton" style="margin-right: 20px;" on:click={onSell}>გაყიდვა</button>
         <button class="btn btn-primary closeButton" on:click={onDiscard}>გაუქმება</button>
     </div>
 {/if}
