@@ -24,6 +24,7 @@ import WarningModal from "../components/WarningModal.svelte";
     let sum = 0;
     let showWarningModal = false;
     let warningModalMessage = "";
+    let arrKeys = [];
 
     $: if(data.add) {
         setTimeout(() => {
@@ -38,6 +39,7 @@ import WarningModal from "../components/WarningModal.svelte";
             else {
                 items[data.keysPressed] = 1;
                 keys.add(data.keysPressed);
+                arrKeys = Array.from(keys);
                 showButtons = keys.size;
             }
             data.keysPressed = "";
@@ -53,6 +55,7 @@ import WarningModal from "../components/WarningModal.svelte";
         else {
             items[chosenCode] = 1;
             keys.add(chosenCode);
+            arrKeys = Array.from(keys);
             showButtons = keys.size;
         }
         dispatchEvent(quantityOrPriceChangeEvent); 
@@ -83,7 +86,7 @@ import WarningModal from "../components/WarningModal.svelte";
         addEventListener('totalprice', () => {
             sum = 0;
             keys.forEach((key) => {
-                pricesByKey[key] = totalPricesByKey[key] / items[key];
+                items[key] = totalPricesByKey[key] / pricesByKey[key];
                 sum += totalPricesByKey[key];
             });
         });
@@ -91,8 +94,10 @@ import WarningModal from "../components/WarningModal.svelte";
 
     function onDelete(key) {
         items[key] = 0;
-        keys.delete(key);
+        sum -= totalPricesByKey[key];
         pricesByKey[key] = productsMap[key].sellingPrice;
+        keys.delete(key);
+        arrKeys = Array.from(keys);
         showButtons = keys.size;
     }
 
@@ -100,7 +105,7 @@ import WarningModal from "../components/WarningModal.svelte";
         event.path[0].select();
         setTimeout(()=>{
             event.path[0].blur();
-        }, 2500);
+        }, 10000);
     }
 
     function onDiscard() {
@@ -130,6 +135,14 @@ import WarningModal from "../components/WarningModal.svelte";
             onDiscard();
         });
         sum = 0;
+    }
+
+    function throwTotalPriceChangeEvent() {
+        dispatchEvent(totalPriceChangeEvent);     
+    }
+
+    function throwQuantityOrPriceChangeEvent() {
+        dispatchEvent(quantityOrPriceChangeEvent);
     }
 </script>
 
@@ -188,36 +201,23 @@ import WarningModal from "../components/WarningModal.svelte";
     </tr>
     </thead>
     <tbody>
-        {#each Array.from(keys) as key, i}
+        {#each arrKeys as key, i}
         <tr>
             <td>{key}</td>
             <td>{productsMap[key].name}</td>
             <td>
                 <div class="financial-input-div">
-                    <input type="number" class="form-control" bind:value={pricesByKey[key]} on:focus={onFocus} on:keyup={
-                        () => {
-                            dispatchEvent(quantityOrPriceChangeEvent);
-                        }
-                    }>
+                    <input type="number" class="form-control" bind:value={pricesByKey[key]} on:focus={onFocus} on:keyup={throwQuantityOrPriceChangeEvent} on:click={throwQuantityOrPriceChangeEvent}>
                    <div>&nbsp;₾</div>
                 </div>
             </td>
             <td>
-                <input type="number" class="form-control" bind:value={items[key]} on:focus={onFocus} on:keyup={
-                    () => {
-                        items[key] = Math.max(0, items[key]);
-                        dispatchEvent(quantityOrPriceChangeEvent);
-                    }
-                }>
+                <input type="number" class="form-control" bind:value={items[key]} on:focus={onFocus} on:keyup={throwQuantityOrPriceChangeEvent} on:click={throwQuantityOrPriceChangeEvent}>
             </td>
             <td>{productsMap[key].quantityType}</td>
             <td>
                 <div class="financial-input-div">
-                    <input type="number" class="form-control" bind:value={totalPricesByKey[key]} on:focus={onFocus} on:keyup={
-                        () => {
-                            dispatchEvent(totalPriceChangeEvent);     
-                        }
-                    }>
+                    <input type="number" class="form-control" bind:value={totalPricesByKey[key]} on:focus={onFocus} on:keyup={throwTotalPriceChangeEvent} on:click={throwTotalPriceChangeEvent}>
                     <div>&nbsp;₾</div>
                 </div>
             </td>
