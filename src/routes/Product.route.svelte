@@ -146,8 +146,14 @@
         if (show.showToolbar) {
             if (!toolbarShown) {
                 setTimeout(() => {
-                    AutoCompleteHelper.autocomplete(document.getElementById("product-code-filter"), allProductCodes, (v) => filterCode = v);
-                    AutoCompleteHelper.autocomplete(document.getElementById("product-name-filter"), allProductNames, (v) => filterName = v);
+                    AutoCompleteHelper.autocomplete(document.getElementById("product-code-filter"), allProductCodes, (v) => {
+                        filterCode = v;
+                        filterProducts();
+                    });
+                    AutoCompleteHelper.autocomplete(document.getElementById("product-name-filter"), allProductNames, (v) => {
+                        filterName = v;
+                        filterProducts();
+                    });
                 }, 150);
             }
             toolbarShown = show.showToolbar;

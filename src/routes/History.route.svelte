@@ -27,7 +27,7 @@
 
     let deleteModalShow = false, deleteModalSubmited = false, toDeleteId = null;
     let toolbarShown = false, filterCode = '', filterName='', filterType='', filterStartDate=null, filterEndDate=null;
-    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'თარიღი', 'რაოდენობა', 'გასაყიდი ფასი', 'ასაღები ფასი', 'მოგება'];
+    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'თარიღი', 'რაოდენობა', 'ჯამ. გასა. ფასი', 'გასაყიდი ფასი', 'ასაღები ფასი', 'მოგება'];
     let marked = DateFormats.formatDate(today);
     let pages = [DateFormats.formatDate(new Date(today.getTime() - 48 * HOUR_IN_MILISECONDS)), DateFormats.formatDate(new Date(today.getTime() - 24 * HOUR_IN_MILISECONDS)), DateFormats.formatDate(today)];
 
@@ -78,6 +78,9 @@
             h.sellDate = new Date(h.sellDate);
         });
         histories = allHistories;
+        histories = histories.sort(function(a,b){
+            return new Date(b.createDate) - new Date(a.createDate);
+        });
     }
 
     function clearFilters() {
@@ -120,8 +123,14 @@
         if (show.showToolbar) {
             if (!toolbarShown) {
                 setTimeout(() => {
-                    AutoCompleteHelper.autocomplete(document.getElementById("product-code-filter"), allProductCodes, (v) => filterCode = v);
-                    AutoCompleteHelper.autocomplete(document.getElementById("product-name-filter"), allProductNames, (v) => filterName = v);
+                    AutoCompleteHelper.autocomplete(document.getElementById("product-code-filter"), allProductCodes, (v) => {
+                        filterCode = v;
+                        filterHistory();
+                    });
+                    AutoCompleteHelper.autocomplete(document.getElementById("product-name-filter"), allProductNames, (v) => {
+                        filterName = v;
+                        filterHistory();
+                    });
                 }, 150);
             }
             toolbarShown = show.showToolbar;
@@ -271,6 +280,7 @@
                 histories.reduce((sum, hist) => { return (ObjectHelper.isNotNullOrUndefined(hist.quantityType) && hist.quantityType == QuantityType.WEIGHT) ? sum + hist.amount : sum }, 0).toFixed(3) + " კგ."
             }
             </td>
+            <td class="financial-td sum-td">{histories.reduce((sum, hist) => { return sum + hist.sellingPrice * hist.amount }, 0).toFixed(2)} ₾</td>
             <td class="financial-td sum-td">{histories.reduce((sum, hist) => { return sum + hist.sellingPrice }, 0).toFixed(2)} ₾</td>
             <td class="financial-td sum-td">{histories.reduce((sum, hist) => { return sum + hist.originalPrice }, 0).toFixed(2)} ₾</td>
             <td class="financial-td sum-td">{histories.reduce((sum, hist) => { return sum + hist.benefit }, 0).toFixed(2)} ₾</td>
@@ -283,6 +293,7 @@
             <td>{history.productType}</td>
             <td>{DateFormats.formatDate(history.sellDate)}</td>
             <td>{Number.isInteger(history.amount) ? history.amount : history.amount.toFixed(3)}</td>
+            <td style="text-align: end;">{(history.sellingPrice * history.amount).toFixed(2)} ₾</td>
             <td style="text-align: end;">{history.sellingPrice.toFixed(2)} ₾</td>
             <td style="text-align: end;">{history.originalPrice.toFixed(2)} ₾</td>
             <td style="text-align: end;">{history.benefit.toFixed(2)} ₾</td>
