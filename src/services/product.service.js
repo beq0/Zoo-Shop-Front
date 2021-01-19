@@ -1,4 +1,5 @@
 import * as Config from '../config.json';
+import sha256  from 'js-sha256';
 
 export class ProductService {
     constructor() {
@@ -19,6 +20,7 @@ export class ProductService {
     }
     
     async changeProduct(product) {
+        product.password = sha256(product.password);
         const res = await (await fetch(Config.baseUrl + '/api/product/change', {
             headers: { "Content-Type": "application/json" },
             method: 'POST',
@@ -33,8 +35,8 @@ export class ProductService {
         })).json();
     }
 
-    async delete(productId) {
-        return (await fetch(Config.baseUrl + '/api/product/delete/' + productId, {
+    async delete(productId, password) {
+        return (await fetch(Config.baseUrl + '/api/product/delete/' + productId + '/' + sha256(password), {
             method: 'DELETE'
         })).json();
     }

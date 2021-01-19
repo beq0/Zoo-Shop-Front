@@ -1,4 +1,5 @@
 import * as Config from '../config.json';
+import sha256  from 'js-sha256';
 
 export class ParameterService {
     constructor() {
@@ -39,6 +40,7 @@ export class ParameterService {
     }
 
     async changeParameter(parameter) {
+        parameter.password = sha256(parameter.password);
         const res = await (await fetch(Config.baseUrl + '/api/parameter/change', {
             headers: { "Content-Type": "application/json" },
             method: 'POST',
@@ -47,8 +49,8 @@ export class ParameterService {
         return res;
     }
 
-    async delete(parameterId) {
-        return (await fetch(Config.baseUrl + '/api/parameter/delete/' + parameterId, {
+    async delete(parameterId, password) {
+        return (await fetch(Config.baseUrl + '/api/parameter/delete/' + parameterId + '/' + sha256(password), {
             method: 'DELETE'
         })).json();
     }

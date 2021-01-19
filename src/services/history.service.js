@@ -1,4 +1,5 @@
 import * as Config from '../config.json';
+import sha256  from 'js-sha256';
 
 export class HistoryService {
     
@@ -41,8 +42,8 @@ export class HistoryService {
         })).json();
     }
 
-    async delete(historyId) {
-        return (await fetch(Config.baseUrl + '/api/history/delete/' + historyId, {
+    async delete(historyId, password) {
+        return (await fetch(Config.baseUrl + '/api/history/delete/' + historyId + '/' + sha256(password), {
             method: 'DELETE'
         })).json();
     }

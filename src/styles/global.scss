@@ -144,3 +144,7 @@ th {
   color: red; 
   font-weight: bold;
 }
+
+.password-text-field {
+  -webkit-text-security: disc;
+}

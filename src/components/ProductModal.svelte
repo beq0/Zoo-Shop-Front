@@ -3,6 +3,7 @@
   import { ParameterService } from "../services/parameter.service";
   import { onMount } from 'svelte';
   import WarningModal from './WarningModal.svelte'
+  import { ObjectHelper } from '../utils/ObjectHelper';
 
   const ParameterType = {
     INTEGER: "რიცხვი",
@@ -22,7 +23,8 @@
   export let show;
   export let title = 'დამატება';
   export let _id, productCode = null, name = "", productType = ProductType[0], 
-          sellingPrice = null, originalPrice = null, quantity = null, quantityType = QuanitityType.COUNT, official = true;
+          sellingPrice = null, originalPrice = null, quantity = null, quantityType = QuanitityType.COUNT, 
+          official = true, password = null;
   export let submited = false, editedQuantities = [];
   export let isChange;
 
@@ -64,7 +66,13 @@
     if (name && productType && sellingPrice != null) {
       let res = null
       if (!isChange) res = await productService.addProduct(updatedProduct);
-      else res = await productService.changeProduct(updatedProduct)
+      else {
+        if (ObjectHelper.isNullOrUndefined(password) || password.length < 8) {
+          return;
+        }
+        updatedProduct['password'] = password;
+        res = await productService.changeProduct(updatedProduct);
+      }
       if (res.status === 200) {
         show=false;
         submited = true;
@@ -88,6 +96,7 @@
     quantity = null;
     quantityType = QuanitityType.COUNT; 
     official = true;
+    password = null;
   }
 
 </script>
@@ -225,6 +234,14 @@
       <div class="label">ოფიციალური:</div>
       <input type="checkbox" class="form-control" id="official" bind:checked={official} required>
     </div>
+
+    {#if isChange}
+      <div class="form-group">
+        <div class="label">პაროლი:&nbsp;<span class="required-field" title="პაროლი უნდა იყოს&#013;მინიმუმ 8 სიგრძის">*</span></div>
+        <input type="text" autocomplete="off" minlength="8" required class="form-control password-text-field" bind:value={password}>
+      </div>  
+    {/if}
+
     <hr>
     <div>
       <button class="btn btn-primary confirmButton" on:click={onSubmit}>დასტური</button>

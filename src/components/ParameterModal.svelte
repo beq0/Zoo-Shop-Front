@@ -2,6 +2,7 @@
     import { ParameterService } from "../services/parameter.service";
     import { onMount } from 'svelte';
     import WarningModal from './WarningModal.svelte'
+    import { ObjectHelper } from '../utils/ObjectHelper';
   
     const ParameterType = {
         INTEGER: "რიცხვი",
@@ -10,7 +11,7 @@
     }
   
     export let show, title = 'დამატება', submited = false, isChange;
-    export let _id, name = null, description = null, parameterType = ParameterType.INTEGER, value = null;
+    export let _id, name = null, description = null, parameterType = ParameterType.INTEGER, value = null, password = null;
   
     let showWarningModal = false, warningModalMessage = '';
     
@@ -39,7 +40,13 @@
         if (name && parameterType) {
             let res = null;
             if (!isChange) res = await parameterService.addParameter(updatedParameter);
-            else res = await parameterService.changeParameter(updatedParameter);
+            else {
+                if (ObjectHelper.isNullOrUndefined(password) || password.length < 8) {
+                    return;
+                }
+                updatedParameter['password'] = password;
+                res = await parameterService.changeParameter(updatedParameter);
+            }
 
             if (res.status === 200) {
                 show = false;
@@ -103,6 +110,14 @@
                 <div>მნიშვნელობა:&emsp;</div>
                 <input type="text" class="form-control" bind:value={value}>
             </div>
+
+            {#if isChange}
+                <div class="form-group">
+                    <div class="label">პაროლი:&nbsp;<span class="required-field" title="პაროლი უნდა იყოს&#013;მინიმუმ 8 სიგრძის">*</span></div>
+                    <input type="text" autocomplete="off" minlength="8" required class="form-control password-text-field" bind:value={password}>
+                </div>  
+            {/if}
+                  
             <hr>
             <div>
                 <button class="btn btn-primary confirmButton" on:click={onSubmit}>დასტური</button>

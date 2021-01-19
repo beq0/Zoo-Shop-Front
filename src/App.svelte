@@ -9,6 +9,7 @@
   import History from "./routes/History.route.svelte"
   import Parameter from "./routes/Parameter.route.svelte"
   import Sell from "./routes/Sell.route.svelte"
+  import Management from "./routes/Management.route.svelte"
 
   // Used for SSR. A falsy value is ignored by the Router.
   export let url = "";
@@ -63,6 +64,7 @@ bind:pathName={pathName}
     <Route path="history" component={History} bind:show={show}></Route>
     <Route path="parameter" component={Parameter} bind:show={show}></Route>
     <Route path="scanner" component={Sell} bind:data={dataForSellRoute}></Route>
+    <Route path="management" component={Management} bind:show={show}></Route>
   </Router>  
 </div>
 

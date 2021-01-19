@@ -73,12 +73,17 @@
         on:click={() => pathName='/parameter'} on:focus={focusWindow}>პარამეტრები</a>
     </li>
 
-    <li class="nav-item lastItem">
+    <li class="nav-item">
         <a class="{'nav-link ' + (pathName === '/scanner' ? 'active' : '')}" id="pills-contact-tab" data-toggle="pill" href="scanner" role="tab" aria-controls="scanner" use:link
         on:click={() => pathName='/scanner'} on:focus={focusWindow}>გაყიდვა</a>
     </li>
 
-    {#if pathName === '/products' || pathName === '/history' || pathName === '/parameter'}
+    <li class="nav-item lastItem">
+        <a class="{'nav-link ' + (pathName === '/management' ? 'active' : '')}" id="pills-contact-tab" data-toggle="pill" href="management" role="tab" aria-controls="management" use:link
+        on:click={() => pathName='/management'} on:focus={focusWindow}>მენეჯმენტი</a>
+    </li>
+
+    {#if pathName === '/products' || pathName === '/history' || pathName === '/management'}
     <li>
         <div title="ფილტრაცია">
             <!-- svelte-ignore a11y-missing-attribute -->
