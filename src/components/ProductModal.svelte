@@ -150,12 +150,12 @@
     <h5 class="modal-title">პროდუქტის {title}</h5>
     <hr>
     <div class="form-group">
-      <div class="label">კოდი:</div>
+      <div class="label">კოდი: <span class="required-field" title="სავალდებულო ველი">*</span></div>
       <input type="text" class="form-control" bind:value={productCode} required>
     </div>
     
     <div class="form-group">
-      <div class="label">სახელი:</div>
+      <div class="label">სახელი: <span class="required-field" title="სავალდებულო ველი">*</span></div>
       <input type="text" class="form-control" bind:value={name} required>
     </div>
     
@@ -180,7 +180,7 @@
     
     <div class="form-group">
       <div id="quantity-label" class="label">
-        <div>რაოდენობები:</div>
+        <div>რაოდენობები: <span class="required-field" title="სავალდებულო ველი">*</span></div>
         <!-- svelte-ignore a11y-missing-attribute -->
         <input type="image" src="images/add.jpg" width="23px" height="23px" on:click={() => {
           editedQuantities.push({
@@ -213,7 +213,7 @@
     </div>
     
     <div class="form-group">
-      <div class="label">რაოდ. ტიპი:</div>
+      <div class="label">რაოდ. ტიპი: <span class="required-field" title="სავალდებულო ველი">*</span></div>
       <select class="form-control" bind:value={quantityType} required>
         {#each Object.values(QuanitityType) as quantityType}
         <option>{quantityType}</option>

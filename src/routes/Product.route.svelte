@@ -337,7 +337,7 @@
             <th scope="col" style="width: 16%;">{column}</th>
         {/each}
         <th class="actionsTh" scope="col">
-            <div class="leftTooltipIconDiv" style="margin-left: auto;" title="დამატება">
+            <div class="leftTooltipIconDiv" style="margin-left: auto;" title="პროდუქტის დამატება">
                 <!-- svelte-ignore a11y-missing-attribute -->
                 <input type="image" src="images/add.jpg" width="27px" height="27px" on:click={()=>{
                     isChange = false;

@@ -137,3 +137,10 @@ th {
   background-color: #3cb5cf !important;
   color: #ffffff;
 }
+
+
+.required-field {
+  user-select: none; 
+  color: red; 
+  font-weight: bold;
+}
