@@ -31,11 +31,12 @@
     
     let productService = ProductService.getInstance(), parameterService = ParameterService.getInstance();
     
-    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'ჯამ. გასა. ფასი', 'ჯამ. ასა. ფასი', 'გასა. ფასი', 'ასა. ფასი', 'რაოდენობა', 'რაოდ. ტიპი', 'განახ. თარიღი', 'შექმნ. თარიღი'];
+    let columnNames = ['კოდი', 'სახელი', 'პროვ. კოდი', 'პროვ. სახელი', 'ტიპი', 'ჯამ. გასა. ფასი', 'ჯამ. ასა. ფასი',
+        'გასა. ფასი', 'ასა. ფასი', 'რაოდენობა', 'რაოდ. ტიპი', 'განახ. თარიღი', 'შექმნ. თარიღი'];
     let toolbarShown = false, filterCode = '', filterName='', filterType='', filterStartPrice=null, filterEndPrice=null;
     let showProductModal = false, isChange = false, showSellModal = false;
-    let _id, productCode = null, name = null, productType = ProductType[0], sellingPrice = null, 
-            originalPrice = null, quantity = null, quantityType = QuantityType.COUNT, official = true;
+    let _id, productCode = null, name = null, productType = ProductType[0], sellingPrice = null, providerCode = null, 
+        providerName = null, originalPrice = null, quantity = null, quantityType = QuantityType.COUNT, official = true;
     let productModalSubmited = false, quantitiesFromProductModal = [];
     let indexOfSelectedProduct;
     let amountToSell = null;
@@ -74,6 +75,8 @@
         _id = product._id
         productCode = product.code;
         name = product.name;
+        providerCode = product.providerCode;
+        providerName = product.providerName;
         productType = product.productType;
         sellingPrice = product.sellingPrice;
         originalPrice = product.originalPrice;
@@ -167,6 +170,8 @@
                 _id,
                 code: productCode,
                 name,
+                providerCode,
+                providerName,
                 productType: productType,
                 sellingPrice,
                 originalPrice: ArrayHelper.isNotEmpty(quantitiesFromProductModal) ? quantitiesFromProductModal[0].originalPrice : 0,
@@ -182,6 +187,8 @@
             } else {
                 products[indexOfSelectedProduct]._id = changedProduct._id;
                 products[indexOfSelectedProduct].code = changedProduct.code;
+                products[indexOfSelectedProduct].providerCode = changedProduct.providerCode;
+                products[indexOfSelectedProduct].providerName = changedProduct.providerName;
                 products[indexOfSelectedProduct].name = changedProduct.name;
                 products[indexOfSelectedProduct].productType = changedProduct.productType;
                 products[indexOfSelectedProduct].sellingPrice = changedProduct.sellingPrice;
@@ -193,6 +200,8 @@
             }
             productCode = null;
             name = null;
+            providerCode = null;
+            providerName = null;
             productType = ProductType[0];
             sellingPrice = null;
             originalPrice = null;
@@ -353,6 +362,8 @@
             <td class="sum-empty-td sum-td">ჯამური:</td>
             <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
+            <td class="sum-empty-td sum-td"></td>
+            <td class="sum-empty-td sum-td"></td>
             <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + (getWholeQuantity(prod) * prod.sellingPrice) }, 0).toFixed(2)} ₾</td>
             <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + (ArrayHelper.isNotEmpty(prod.quantity) ? prod.quantity.reduce((sum1, qt) => { return sum1 + qt.quantity * qt.originalPrice}, 0) : 0) }, 0).toFixed(2)} ₾</td>
             <td class="financial-td sum-td">{products.reduce((sum, prod) => { return sum + prod.sellingPrice }, 0).toFixed(2)} ₾</td>
@@ -371,6 +382,8 @@
         <tr>
             <td>{product.code}</td>
             <td>{product.name}</td>
+            <td>{product.providerCode}</td>
+            <td>{product.providerName}</td>
             <td>{product.productType}</td>
             <td class="financial-td">{(getWholeQuantity(product) * product.sellingPrice).toFixed(2)} ₾</td>
             <td class="financial-td">{ArrayHelper.isNotEmpty(product.quantity) ? (getWholeQuantity(product) * product.originalPrice).toFixed(2) : 0} ₾</td>
@@ -419,6 +432,8 @@ title={isChange ? 'რედაქტირება' : 'დამატებ�
 bind:_id={_id}
 bind:productCode={productCode}
 bind:name={name}
+bind:providerCode={providerCode}
+bind:providerName={providerName}
 bind:productType={productType} 
 bind:sellingPrice={sellingPrice} 
 bind:originalPrice={originalPrice}

@@ -22,7 +22,7 @@
 
   export let show;
   export let title = 'დამატება';
-  export let _id, productCode = null, name = "", productType = ProductType[0], 
+  export let _id, productCode = null, name = "", providerCode = null, providerName = null, productType = ProductType[0], 
           sellingPrice = null, originalPrice = null, quantity = null, quantityType = QuanitityType.COUNT, 
           official = true, password = null;
   export let submited = false, editedQuantities = [];
@@ -56,6 +56,8 @@
       _id,
       code: productCode,
       name,
+      providerCode,
+      providerName,
       productType,
       sellingPrice,
       originalPrice,
@@ -90,6 +92,8 @@
     _id = null
     productCode = null
     name = null;
+    providerCode = null;
+    providerName = null;
     productType = ProductType[0];
     sellingPrice = null;
     originalPrice = null;
@@ -166,6 +170,16 @@
     <div class="form-group">
       <div class="label">სახელი: <span class="required-field" title="სავალდებულო ველი">*</span></div>
       <input type="text" class="form-control" bind:value={name} required>
+    </div>
+
+    <div class="form-group">
+      <div class="label">პროვ. კოდი: <span class="required-field" title="სავალდებულო ველი">*</span></div>
+      <input type="text" class="form-control" bind:value={providerCode} required>
+    </div>
+    
+    <div class="form-group">
+      <div class="label">პროვ. სახელი: <span class="required-field" title="სავალდებულო ველი">*</span></div>
+      <input type="text" class="form-control" bind:value={providerName} required>
     </div>
     
     <div class="form-group">
