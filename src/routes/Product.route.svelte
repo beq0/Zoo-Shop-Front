@@ -11,6 +11,7 @@
     import { ArrayHelper } from "../utils/ArrayHelper";
     import { NumberHelper } from "../utils/NumberHelper";
     import { AutoCompleteHelper } from "../utils/AutoCompleteHelper"
+import ImportFileModal from "../components/ImportFileModal.svelte";
 
     export let show = {};
 
@@ -41,7 +42,7 @@
     let indexOfSelectedProduct;
     let amountToSell = null;
     let sellModalSubmited = false, availableAmount = null;
-    let toDeleteId = null, deleteModalShow = false, deleteModalSubmited = false, indexOfProductToDelete = null;
+    let toDeleteId = null, deleteModalShow = false, deleteModalSubmited = false, indexOfProductToDelete = null, showFileModal = false;
 
     if(DeviceDetectorService.isBrowser) {
         let url = new URL(window.location.href);
@@ -272,6 +273,7 @@
     }
 
     .leftTooltipIconDiv {
+        display: flex;
         width: 27px;
         font-weight: normal;
     }
@@ -346,13 +348,22 @@
             <th scope="col" style="width: 16%;">{column}</th>
         {/each}
         <th class="actionsTh" scope="col">
-            <div class="leftTooltipIconDiv" style="margin-left: auto;" title="პროდუქტის დამატება">
-                <!-- svelte-ignore a11y-missing-attribute -->
-                <input type="image" src="images/add.jpg" width="27px" height="27px" on:click={()=>{
-                    isChange = false;
-                    quantitiesFromProductModal = [];
-                    showProductModal = true;
-                }}>
+            <div class="actionButtonsDiv">
+                <div title="პროდუქტის დამატება" class="leftTooltipIconDiv">
+                    <!-- svelte-ignore a11y-missing-attribute -->
+                    <input type="image" src="images/add.jpg" class="actionButtons" width="27px" height="27px" on:click={()=>{
+                        isChange = false;
+                        quantitiesFromProductModal = [];
+                        showProductModal = true;
+                    }}>
+                </div>
+                <div title="პროდუქტების იმპორტი" class="leftTooltipIconDiv">
+                    <!-- svelte-ignore a11y-missing-attribute -->
+                    <input type="image" src="images/import.png" class="actionButtons" width="27px" height="27px" on:click={()=>{
+                        isChange = false;
+                        showFileModal = true;
+                    }}>
+                </div>
             </div>
         </th>
     </tr>
@@ -465,4 +476,9 @@ bind:service={productService}
 
 <ProductReport
 bind:show={show.showProductReport}
+/>
+
+<ImportFileModal
+bind:show={showFileModal}
+service={productService}
 />
