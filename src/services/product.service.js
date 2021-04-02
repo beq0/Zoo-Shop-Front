@@ -41,6 +41,15 @@ export class ProductService {
         })).json();
     }
 
+    async addProductsFromFile(file) {
+        let formData = new FormData();
+        formData.append("file", file);
+        return (await fetch(Config.baseUrl + '/api/product/addProducts', {
+            method: 'POST',
+            body: formData
+        })).json();
+    }
+
     async findProducts(filters) {
         return (await fetch(Config.baseUrl + '/api/product/findProducts', {
             headers: { "Content-Type": "application/json" },
