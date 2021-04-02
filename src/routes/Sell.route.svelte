@@ -2,10 +2,10 @@
     import { onMount } from "svelte";
     import { ProductService } from "../services/product.service"
     import ChooseProductModal from "../components/ChooseProductModal.svelte"
-import WarningModal from "../components/WarningModal.svelte";
+    import WarningModal from "../components/WarningModal.svelte";
 
     export let data;
-    const columnNames = ["კოდი", "სახელი", "საცალო ფასი", "რაოდენობა", "ტიპი", "ჯამური ფასი"];
+    const columnNames = ["კოდი", "სახელი", "საცალო ფასი", "რაოდენობა", "ტიპი", "ჯამური ფასი", "შენიშვნა"];
     const productService = ProductService.getInstance();
     let quantityOrPriceChangeEvent;
     let totalPriceChangeEvent;
@@ -15,6 +15,7 @@ import WarningModal from "../components/WarningModal.svelte";
     let items = new Map();
     let pricesByKey = new Map();
     let totalPricesByKey = new Map();
+    let descriptionsByKey = new Map();
     let namesByKey = new Map();
     let keysByName = new Map();
     let keys = new Set();
@@ -96,6 +97,7 @@ import WarningModal from "../components/WarningModal.svelte";
         items[key] = 0;
         sum -= totalPricesByKey[key];
         pricesByKey[key] = productsMap[key].sellingPrice;
+        descriptionsByKey.delete(key);
         keys.delete(key);
         arrKeys = Array.from(keys);
         showButtons = keys.size;
@@ -124,7 +126,7 @@ import WarningModal from "../components/WarningModal.svelte";
 
     async function onSell() {
         keys.forEach(async (key) => {
-            let res = await productService.sellProduct(productsMap[key]._id, items[key], pricesByKey[key], null);
+            let res = await productService.sellProduct(productsMap[key]._id, items[key], pricesByKey[key], null, descriptionsByKey[key]);
             if (res.status === 200) {
                 productsMap[key].quantity = res.newQuantity;
             } else {
@@ -221,6 +223,11 @@ import WarningModal from "../components/WarningModal.svelte";
                     <div>&nbsp;₾</div>
                 </div>
             </td>
+            <td>
+                <div class="financial-input-div">
+                    <input type="text" class="form-control" bind:value={descriptionsByKey[key]} on:focus={onFocus}>
+                </div>
+            </td>
             <td style="padding-right: 5px;">
                 <div class="actionButtonsDiv">
                     <div class="leftTooltipIconDiv" title="წაშლა" style="margin-right: 5px;">
@@ -241,6 +248,7 @@ import WarningModal from "../components/WarningModal.svelte";
             <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
             <td class="financial-td sum-td">{sum} ₾</td>
+            <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
         </tr>
     </tbody>

@@ -27,7 +27,8 @@
 
     let deleteModalShow = false, deleteModalSubmited = false, toDeleteId = null;
     let toolbarShown = false, filterCode = '', filterName='', filterType='', filterStartDate=null, filterEndDate=null;
-    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'თარიღი', 'რაოდენობა', 'ჯამ. გასა. ფასი', 'გასაყიდი ფასი', 'ასაღები ფასი', 'მოგება'];
+    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'თარიღი', 'რაოდენობა', 'ჯამ. გასა. ფასი', 'გასაყიდი ფასი', 
+        'ასაღები ფასი', 'მოგება'];
     let marked = DateFormats.formatDate(today);
     let pages = [DateFormats.formatDate(new Date(today.getTime() - 48 * HOUR_IN_MILISECONDS)), DateFormats.formatDate(new Date(today.getTime() - 24 * HOUR_IN_MILISECONDS)), DateFormats.formatDate(today)];
 
@@ -299,6 +300,10 @@
             <td style="text-align: end;">{history.benefit.toFixed(2)} ₾</td>
             <td style="padding-right: 5px;">
                 <div class="actionButtonsDiv">
+                    <div class="leftTooltipIconDiv" title="{history.description}" style="margin-right: 5px;">
+                        <!-- svelte-ignore a11y-missing-attribute -->
+                        <input type="image" src="images/info.png" class="actionButtons" width="27px" height="27px">
+                    </div>
                     <div class="leftTooltipIconDiv" title="წაშლა" style="margin-right: 5px;">
                         <!-- svelte-ignore a11y-missing-attribute -->
                         <input type="image" src="images/delete.png" class="actionButtons" width="27px" height="27px"
