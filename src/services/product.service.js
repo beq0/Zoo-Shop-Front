@@ -59,12 +59,13 @@ export class ProductService {
         })).json();
     }
 
-    async sellProduct(_id, amount, sellingPrice, sellDate) {
+    async sellProduct(_id, amount, sellingPrice, sellDate, description) {
         const req = {
             _id,
             amount,
             sellingPrice, 
-            sellDate
+            sellDate,
+            description
         } 
         const res = await (await fetch(Config.baseUrl + '/api/product/sellProduct', {
             headers: { "Content-Type": "application/json" },

@@ -84,6 +84,11 @@
         filterName='', filterType='', filterStartDate=null, filterEndDate=null;
     }
 
+    function getPercentage(num, from) {
+        let res = ((100 * num) / from).toFixed(2);
+        return isNaN(res) ? 0.00 : res;
+    }
+
 </script>
 
 <style>
@@ -283,7 +288,7 @@
         
         <div class="result-info">
             <div class="result-info-header">
-                წლიური
+                წლიური <span style="color: #a5a5a5;">({getPercentage(yearlyBenefit, yearlySellingPrice)} %)</span>
             </div>  
             
             <div class="result-info-pairs">
@@ -309,7 +314,7 @@
         
         <div class="result-info">
             <div class="result-info-header">
-                თვიური
+                თვიური <span style="color: #a5a5a5;">({getPercentage(monthlyBenefit, monthlySellingPrice)} %)</span>
             </div>  
             
             <div class="result-info-pairs">
@@ -335,7 +340,7 @@
 
         <div class="result-info">
             <div class="result-info-header">
-                დღიური
+                დღიური <span style="color: #a5a5a5;">({getPercentage(dailyBenefit, dailySellingPrice)} %)</span>
             </div>  
             
             <div class="result-info-pairs">

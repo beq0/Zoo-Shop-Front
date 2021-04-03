@@ -16,6 +16,7 @@
     let showWarningModal = false, warningModalMessage = '';
     const date = new Date();
     let sellDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+    let description = null;
 
     const productService = ProductService.getInstance();
 
@@ -51,12 +52,13 @@
         amount = null;
         fullPrice = null;
         availableAmount = null;
+        description = null;
         show = false;
     }
 
     async function onSubmit() {
         if(!amount) return;
-        let res = await productService.sellProduct(_id, amount, sellingPrice, sellDate);
+        let res = await productService.sellProduct(_id, amount, sellingPrice, sellDate, description);
         if (res.status === 200) {
           availableAmount = null;
           show=false;
@@ -66,6 +68,7 @@
           originalPrice = res.newOriginalPrice;
           amount = null;
           fullPrice = null;
+          description = null;
         } else {
           warningModalMessage = 'დაფიქსირდა შეცდომა პროდუქტისთვის რაოდენობის დაკლების დროს!'
           showWarningModal = true;
@@ -168,6 +171,11 @@
         <div class="form-group">
           <div>თარიღი:&emsp;</div>
           <input type="date" class="form-control" id="amount" bind:value={sellDate}>
+        </div>
+
+        <div class="form-group">
+          <div>შენიშვნა:&emsp;</div>
+          <input type="text" class="form-control" id="amount" bind:value={description}>
         </div>
         <hr>
         <div>
