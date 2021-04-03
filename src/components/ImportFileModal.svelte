@@ -31,6 +31,10 @@
         show = false;
     }
 
+    function onChange(event) {
+        file = event.srcElement.files[0];
+    }
+
 </script>
   
 <style>
@@ -46,7 +50,7 @@
         <div class="content">  
         <h5 class="modal-title">აირჩიეთ ფაილი</h5>
         <hr>
-        <input type="file" style="border-style: dotted;" bind:value={file} accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+        <input type="file" style="border-style: dotted;" on:change={onChange} accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
         <hr>
         <div>
             <button class="btn btn-primary confirmButton" on:click={onSubmit}>დასტური</button>

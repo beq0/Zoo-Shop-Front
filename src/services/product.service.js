@@ -44,10 +44,11 @@ export class ProductService {
     async addProductsFromFile(file) {
         let formData = new FormData();
         formData.append("file", file);
-        return (await fetch(Config.baseUrl + '/api/product/addProducts', {
+        let options = {
             method: 'POST',
             body: formData
-        })).json();
+        }
+        return (await fetch(Config.baseUrl + '/api/product/addProducts', options)).json();
     }
 
     async findProducts(filters) {
