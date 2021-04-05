@@ -11,7 +11,8 @@
     import { ArrayHelper } from "../utils/ArrayHelper";
     import { NumberHelper } from "../utils/NumberHelper";
     import { AutoCompleteHelper } from "../utils/AutoCompleteHelper"
-import ImportFileModal from "../components/ImportFileModal.svelte";
+    import ImportFileModal from "../components/ImportFileModal.svelte";
+import Link from "svelte-routing/src/Link.svelte";
 
     export let show = {};
 
@@ -43,6 +44,7 @@ import ImportFileModal from "../components/ImportFileModal.svelte";
     let amountToSell = null;
     let sellModalSubmited = false, availableAmount = null;
     let toDeleteId = null, deleteModalShow = false, deleteModalSubmited = false, indexOfProductToDelete = null, showFileModal = false;
+    let productsAdded = [], importSubmitted = false;
 
     if(DeviceDetectorService.isBrowser) {
         let url = new URL(window.location.href);
@@ -145,6 +147,15 @@ import ImportFileModal from "../components/ImportFileModal.svelte";
 
         if (deleteModalSubmited) {
             deleteModalIsSubmited();
+        }
+
+        if (importSubmitted) {
+            importSubmitted = false;
+            allProducts = [...allProducts, ...productsAdded];
+            products = [...productsAdded, ...products];
+            allProductCodes = [...allProductCodes, ...(productsAdded.map(e => e.code))]
+            allProductNames = [...allProductNames, ...(productsAdded.map(e => e.name))]
+            productsAdded = [];
         }
 
         if (show.showToolbar) {
@@ -480,5 +491,7 @@ bind:show={show.showProductReport}
 
 <ImportFileModal
 bind:show={showFileModal}
+bind:productsAdded={productsAdded}
+bind:submitted = {importSubmitted}
 service={productService}
 />
