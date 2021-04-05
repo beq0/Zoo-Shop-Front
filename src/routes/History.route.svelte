@@ -27,7 +27,7 @@
 
     let deleteModalShow = false, deleteModalSubmited = false, toDeleteId = null;
     let toolbarShown = false, filterCode = '', filterName='', filterType='', filterStartDate=null, filterEndDate=null;
-    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'თარიღი', 'რაოდენობა', 'ჯამ. გასა. ფასი', 'გასაყიდი ფასი', 
+    let columnNames = ['კოდი', 'სახელი', 'ტიპი', 'თარიღი', 'ანგარიშსწორება', 'რაოდენობა', 'ჯამ. გასა. ფასი', 'გასაყიდი ფასი', 
         'ასაღები ფასი', 'მოგება'];
     let marked = DateFormats.formatDate(today);
     let pages = [DateFormats.formatDate(new Date(today.getTime() - 48 * HOUR_IN_MILISECONDS)), DateFormats.formatDate(new Date(today.getTime() - 24 * HOUR_IN_MILISECONDS)), DateFormats.formatDate(today)];
@@ -276,6 +276,7 @@
             <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
+            <td class="sum-empty-td sum-td"></td>
             <td class="financial-td sum-td">{
                 histories.reduce((sum, hist) => { return (ObjectHelper.isNullOrUndefined(hist.quantityType) || hist.quantityType == QuantityType.COUNT) ? sum + hist.amount : sum }, 0) + " ც; " +
                 histories.reduce((sum, hist) => { return (ObjectHelper.isNotNullOrUndefined(hist.quantityType) && hist.quantityType == QuantityType.WEIGHT) ? sum + hist.amount : sum }, 0).toFixed(3) + " კგ."
@@ -293,6 +294,7 @@
             <td>{history.productName}</td>
             <td>{history.productType}</td>
             <td>{DateFormats.formatDate(history.sellDate)}</td>
+            <td>{history.isInCash ? 'ნაღდი' : 'ბარათით'}</td>
             <td>{Number.isInteger(history.amount) ? history.amount : history.amount.toFixed(3)}</td>
             <td style="text-align: end;">{(history.sellingPrice * history.amount).toFixed(2)} ₾</td>
             <td style="text-align: end;">{history.sellingPrice.toFixed(2)} ₾</td>

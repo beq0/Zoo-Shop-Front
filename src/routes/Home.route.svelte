@@ -12,6 +12,7 @@
     let filterName='', filterType='', filterStartDate=new Date(date.getFullYear(), 0, 1), filterEndDate=null;
     let productsSold = {}, yearlyBenefit = 0, monthlyBenefit = 0, dailyBenefit = 0, yearlySellingPrice = 0, monthlySellingPrice = 0, dailySellingPrice = 0;
     let showDetailedProducts = false, detailedAmounts = {};
+    let dailySoldInCash = 0, monthlySoldInCash = 0, yearlySoldInCash = 0;
 
     let allProducts = [], allProductNames = [];
     
@@ -32,7 +33,10 @@
     })
 
     async function filterData() {
-        productsSold = {}, yearlyBenefit = 0, monthlyBenefit = 0, dailyBenefit = 0, yearlySellingPrice = 0, monthlySellingPrice = 0, dailySellingPrice = 0, detailedAmounts = {};
+        productsSold = {}, yearlyBenefit = 0, monthlyBenefit = 0, dailyBenefit = 0, yearlySellingPrice = 0;
+        monthlySellingPrice = 0, dailySellingPrice = 0, detailedAmounts = {};
+        dailySoldInCash = 0, monthlySoldInCash = 0, yearlySoldInCash = 0;
+
         let filters = {
             productName: filterName,
             productType: filterType,
@@ -56,14 +60,17 @@
             const currAmount = history.amount;
             const currBenefit = history.benefit;
             const currWholeSellingPrice = history.sellingPrice * currAmount;
+            if (history.isInCash) yearlySoldInCash += currBenefit;
             productsSold[history.productName].amount += currAmount;
             productsSold[history.productName].yearlyBenefit += currBenefit;
             productsSold[history.productName].yearlySellingPrice += currWholeSellingPrice;
             if (date.getFullYear() === history.sellDate.getFullYear() && date.getMonth() === history.sellDate.getMonth()) {
+                if (history.isInCash) monthlySoldInCash += currBenefit;
                 productsSold[history.productName].monthlyBenefit += currBenefit;
                 productsSold[history.productName].monthlySellingPrice += currWholeSellingPrice;
             }
             if (new Date().toDateString() == history.sellDate.toDateString()) { 
+                if (history.isInCash) dailySoldInCash += currBenefit;
                 productsSold[history.productName].dailyBenefit += currBenefit;
                 productsSold[history.productName].dailySellingPrice += currWholeSellingPrice;
             }
@@ -180,6 +187,11 @@
         font-weight: bold;
     }
 
+    .result-info-amounts {
+        font-size: 18px;
+        font-family: inherit;
+    }
+
     .result-info-pairs {
         display: flex;
         flex-direction: row;
@@ -289,7 +301,11 @@
         <div class="result-info">
             <div class="result-info-header">
                 წლიური <span style="color: #a5a5a5;">({getPercentage(yearlyBenefit, yearlySellingPrice)} %)</span>
-            </div>  
+            </div> 
+            
+            <div class="result-info-amounts">
+                <span style="color: #5f5f5f;">ნაღდი: {getPercentage(yearlySoldInCash, yearlyBenefit)} %</span>
+            </div> 
             
             <div class="result-info-pairs">
                 <div class="result-pair">
@@ -315,7 +331,11 @@
         <div class="result-info">
             <div class="result-info-header">
                 თვიური <span style="color: #a5a5a5;">({getPercentage(monthlyBenefit, monthlySellingPrice)} %)</span>
-            </div>  
+            </div>
+
+            <div class="result-info-amounts">
+                <span style="color: #5f5f5f;">ნაღდი: {getPercentage(monthlySoldInCash, monthlyBenefit)} %</span>
+            </div> 
             
             <div class="result-info-pairs">
                 <div class="result-pair">
@@ -341,7 +361,11 @@
         <div class="result-info">
             <div class="result-info-header">
                 დღიური <span style="color: #a5a5a5;">({getPercentage(dailyBenefit, dailySellingPrice)} %)</span>
-            </div>  
+            </div>
+
+            <div class="result-info-amounts">
+                <span style="color: #5f5f5f;">ნაღდი: {getPercentage(dailySoldInCash, dailyBenefit)} %</span>
+            </div> 
             
             <div class="result-info-pairs">
                 <div class="result-pair">

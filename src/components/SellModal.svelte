@@ -16,7 +16,7 @@
     let showWarningModal = false, warningModalMessage = '';
     const date = new Date();
     let sellDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
-    let description = null;
+    let description = null, isInCash = true;
 
     const productService = ProductService.getInstance();
 
@@ -53,12 +53,13 @@
         fullPrice = null;
         availableAmount = null;
         description = null;
+        isInCash = true;
         show = false;
     }
 
     async function onSubmit() {
         if(!amount) return;
-        let res = await productService.sellProduct(_id, amount, sellingPrice, sellDate, description);
+        let res = await productService.sellProduct(_id, amount, sellingPrice, sellDate, description, isInCash);
         if (res.status === 200) {
           availableAmount = null;
           show=false;
@@ -69,6 +70,7 @@
           amount = null;
           fullPrice = null;
           description = null;
+          isInCash = true;
         } else {
           warningModalMessage = 'დაფიქსირდა შეცდომა პროდუქტისთვის რაოდენობის დაკლების დროს!'
           showWarningModal = true;
@@ -144,6 +146,11 @@
     .form-control {
       width: 300px;
     }
+
+    #isInCash {
+    height: 17px;
+    box-shadow: none;
+  }
   
   </style>
   
@@ -171,6 +178,11 @@
         <div class="form-group">
           <div>თარიღი:&emsp;</div>
           <input type="date" class="form-control" id="amount" bind:value={sellDate}>
+        </div>
+
+        <div class="form-group">
+          <div>ნაღდი:&emsp;</div>
+          <input type="checkbox" class="form-control" id="isInCash" bind:checked={isInCash}>
         </div>
 
         <div class="form-group">
