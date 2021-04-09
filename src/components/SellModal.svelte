@@ -2,6 +2,7 @@
     import {ProductService} from "../services/product.service";
     import { onMount } from 'svelte';
     import WarningModal from './WarningModal.svelte';
+    import {NumberHelper} from '../utils/NumberHelper';
 
     const QuanitityType = {
       COUNT: "ცალობითი",
@@ -17,6 +18,7 @@
     const date = new Date();
     let sellDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
     let description = null, isInCash = true;
+    let fullAmount = null, fullAmountChanged = false, change = null;
 
     const productService = ProductService.getInstance();
 
@@ -54,6 +56,8 @@
         availableAmount = null;
         description = null;
         isInCash = true;
+        fullAmount = null;
+        change = null;
         show = false;
     }
 
@@ -71,6 +75,8 @@
           fullPrice = null;
           description = null;
           isInCash = true;
+          fullAmount = null;
+          change = null;
         } else {
           warningModalMessage = 'დაფიქსირდა შეცდომა პროდუქტისთვის რაოდენობის დაკლების დროს!'
           showWarningModal = true;
@@ -84,6 +90,7 @@
         fixAmount();
         fullPrice = getFullPrice();
         amountChanged = false;
+        if (NumberHelper.isNonZero(fullAmount)) change = (fullAmount - fullPrice).toFixed(2);
       }
 
       if (fullPriceChanged) {
@@ -94,13 +101,20 @@
         if ((availableAmount || availableAmount == 0) && availableAmount - amount <= 0) {
           fullPrice = getFullPrice();
         }
+        if (NumberHelper.isNonZero(fullAmount)) change = (fullAmount - fullPrice).toFixed(2);
       }
 
       if (sellingPriceChanged) {
         fullPrice = getFullPrice();
         sellingPriceChanged = false;
+        if (NumberHelper.isNonZero(fullAmount)) change = (fullAmount - fullPrice).toFixed(2);
       }
       
+      if (fullAmountChanged) {
+        if (getDecimalPoints(fullAmount) > 2) fullAmount = fullAmount.toFixed(2);
+        if (NumberHelper.isNonZero(fullAmount)) change = (fullAmount - fullPrice).toFixed(2);
+        fullAmountChanged = false;
+      }
     }
 
     function fixAmount() {
@@ -148,9 +162,9 @@
     }
 
     #isInCash {
-    height: 17px;
-    box-shadow: none;
-  }
+      height: 17px;
+      box-shadow: none;
+    }
   
   </style>
   
@@ -189,6 +203,18 @@
           <div>შენიშვნა:&emsp;</div>
           <input type="text" class="form-control" id="amount" bind:value={description}>
         </div>
+
+        {#if isInCash}
+        <div class="form-group">
+          <div>მთლიანი თანხა:&emsp;</div>
+          <input type="number" class="form-control" id="amount" bind:value={fullAmount} on:input={() => {fullAmountChanged = true}}>
+        </div>
+
+        <div class="form-group">
+          <div>ნაშთი:&emsp;</div>
+          <input type="number" class="form-control" id="amount" bind:value={change} readonly>
+        </div>
+        {/if}
         <hr>
         <div>
             <button class="btn btn-primary confirmButton" on:click={onSubmit}>დასტური</button>

@@ -57,9 +57,9 @@
         <div class="content">  
         <h5 class="modal-title">აირჩიეთ ფაილი</h5>
         <hr>
-        <input type="file" style="border-style: dotted;" on:change={onChange} accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+        <input type="file" class="fileUploadInput" on:change={onChange} accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
         <hr>
-        <button class="btn btn-primary template-btn" on:click={downloadTemplate}>Template</button>
+        <button class="btn btn-primary template-btn" on:click={downloadTemplate}>შაბლონი</button>
         <hr>
         <div>
             <button class="btn btn-primary confirmButton" on:click={onSubmit}>დასტური</button>

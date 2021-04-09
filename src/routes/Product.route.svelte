@@ -289,6 +289,10 @@ import Link from "svelte-routing/src/Link.svelte";
         font-weight: normal;
     }
 
+    #header-last-button {
+        margin: 0 10px;
+    }
+
     .sum-tr {
         background-color: lightsteelblue;
     }
@@ -368,7 +372,7 @@ import Link from "svelte-routing/src/Link.svelte";
                         showProductModal = true;
                     }}>
                 </div>
-                <div title="პროდუქტების იმპორტი" class="leftTooltipIconDiv">
+                <div title="პროდუქტების იმპორტი" class="leftTooltipIconDiv" id="header-last-button">
                     <!-- svelte-ignore a11y-missing-attribute -->
                     <input type="image" src="images/import.png" class="actionButtons" width="27px" height="27px" on:click={()=>{
                         isChange = false;

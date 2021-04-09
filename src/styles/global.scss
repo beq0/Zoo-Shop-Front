@@ -148,3 +148,40 @@ th {
 .password-text-field {
   -webkit-text-security: disc;
 }
+
+
+// file input
+.fileUploadInput {
+  outline: none;
+}
+
+.fileUploadInput::before {
+  cursor: pointer;
+  content: "ატვირთვა";
+  display: inline-block;
+  background-color: #3cb5cf;
+  color: white;
+  border: 0px solid;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 14px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.fileUploadInput::-webkit-file-upload-button {
+  display: none;
+}
+
+.table td {
+  font-size: 13px;
+}
+
+
+// td inputs 
+.td-input {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 15px;
+}

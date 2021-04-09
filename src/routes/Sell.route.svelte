@@ -26,6 +26,7 @@
     let showWarningModal = false;
     let warningModalMessage = "";
     let arrKeys = [];
+    let isInCash = true;
 
     $: if(data.add) {
         setTimeout(() => {
@@ -126,7 +127,7 @@
 
     async function onSell() {
         keys.forEach(async (key) => {
-            let res = await productService.sellProduct(productsMap[key]._id, items[key], pricesByKey[key], null, descriptionsByKey[key]);
+            let res = await productService.sellProduct(productsMap[key]._id, items[key], pricesByKey[key], null, descriptionsByKey[key], isInCash);
             if (res.status === 200) {
                 productsMap[key].quantity = res.newQuantity;
             } else {
@@ -186,6 +187,13 @@
     .confirm-buttons {
         text-align: center;
     }
+
+    #isInCash {
+        width: 16px;
+        height: 16px;
+        box-shadow: none;
+    }
+
 </style>
 
 <table class="table">
@@ -248,7 +256,12 @@
             <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
             <td class="financial-td sum-td">{sum} ₾</td>
-            <td class="sum-empty-td sum-td"></td>
+            <td class="sum-empty-td sum-td">
+                <div class="td-input">
+                    <div>ნაღდი:&emsp;</div>
+                    <input type="checkbox" id="isInCash" bind:checked={isInCash}>
+                </div>
+            </td>
             <td class="sum-empty-td sum-td"></td>
         </tr>
     </tbody>
