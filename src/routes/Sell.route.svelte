@@ -1,8 +1,10 @@
 <script>
     import { onMount } from "svelte";
-    import { ProductService } from "../services/product.service"
-    import ChooseProductModal from "../components/ChooseProductModal.svelte"
+    import { ProductService } from "../services/product.service";
+    import ChooseProductModal from "../components/ChooseProductModal.svelte";
     import WarningModal from "../components/WarningModal.svelte";
+    import ConfirmModal from '../components/ConfirmModal.svelte';
+    import {NumberHelper} from "../utils/NumberHelper";
 
     export let data;
     const columnNames = ["კოდი", "სახელი", "საცალო ფასი", "რაოდენობა", "ტიპი", "ჯამური ფასი", "შენიშვნა"];
@@ -27,6 +29,9 @@
     let warningModalMessage = "";
     let arrKeys = [];
     let isInCash = true;
+    let fullAmount = null, fullAmountChanged = false, change = null;
+    let showSellConfirmation = false, sellConfirmed = false;
+    let sellConfirmationMessage = "";
 
     $: if(data.add) {
         setTimeout(() => {
@@ -63,6 +68,22 @@
         dispatchEvent(quantityOrPriceChangeEvent); 
         manuallyAdded = false;
         chosenCode = undefined;
+    }
+
+    $: if (fullAmountChanged) {
+        if (getDecimalPoints(fullAmount) > 2) fullAmount = fullAmount.toFixed(2);
+        if (NumberHelper.isNonZero(fullAmount)) {
+            let fullPrice = 0;
+            keys.forEach(k => {
+                fullPrice += items[k] * pricesByKey[k];
+            });
+            change = (fullAmount - fullPrice).toFixed(2);
+        }
+        fullAmountChanged = false;
+    }
+
+    $: if (sellConfirmed) {
+        sell();
     }
 
     onMount(async () => {
@@ -126,10 +147,19 @@
     }
 
     async function onSell() {
+        sellConfirmationMessage = "დარწმუნებული ხართ, რომ გსურთ პროდუქტების გაყიდვა?";
+        showSellConfirmation = true;
+    }
+
+    async function sell() {
         keys.forEach(async (key) => {
             let res = await productService.sellProduct(productsMap[key]._id, items[key], pricesByKey[key], null, descriptionsByKey[key], isInCash);
             if (res.status === 200) {
                 productsMap[key].quantity = res.newQuantity;
+                sum = 0;
+                fullAmount = 0;
+                change = 0;
+                fullAmountChanged = true;
             } else {
                 warningModalMessage = 'დაფიქსირდა შეცდომა პროდუქტის გაყიდვიდსას!'
                 showWarningModal = true;
@@ -138,6 +168,15 @@
             onDiscard();
         });
         sum = 0;
+        sellConfirmed = false;
+        showSellConfirmation = false;
+    }
+
+    function getDecimalPoints(n) {
+        if (n == null) return 0;
+        let stringNumber = n.toString();
+        if (!stringNumber.includes('.')) return 0;
+        return stringNumber.length - (stringNumber.indexOf('.') + 1);
     }
 
     function throwTotalPriceChangeEvent() {
@@ -253,8 +292,18 @@
             <td class="sum-empty-td sum-td">ჯამი:</td>
             <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
-            <td class="sum-empty-td sum-td"></td>
-            <td class="sum-empty-td sum-td"></td>
+            <td class="sum-empty-td sum-td" style="padding-left: 0; padding-right: 0;">
+                <div class="td-input">
+                    <div style="margin-right: 10px; font-size: 13px; text-align: center;">მთლიანი თანხა:</div>
+                    <input type="number" class="form-control" bind:value={fullAmount}  on:input={() => {fullAmountChanged = true}}>
+                </div>
+            </td>
+            <td class="sum-empty-td sum-td">
+                <div class="td-input">
+                    <div style="margin-right: 10px; font-size: 13px;">ნაშთი:</div>
+                    <input type="number" class="form-control" bind:value={change} readonly>
+                </div>
+            </td>
             <td class="financial-td sum-td">{sum} ₾</td>
             <td class="sum-empty-td sum-td">
                 <div class="td-input">
@@ -289,4 +338,12 @@
         bind:show={showWarningModal}
         bind:message={warningModalMessage}
     ></WarningModal>
+{/if}
+
+{#if showSellConfirmation}
+    <ConfirmModal
+        bind:show={showSellConfirmation}
+        bind:confirmed={sellConfirmed}
+        bind:message={sellConfirmationMessage}
+    />
 {/if}

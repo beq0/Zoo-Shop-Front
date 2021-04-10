@@ -2,6 +2,7 @@
     import {ProductService} from "../services/product.service";
     import { onMount } from 'svelte';
     import WarningModal from './WarningModal.svelte';
+    import ConfirmModal from './ConfirmModal.svelte';
     import {NumberHelper} from '../utils/NumberHelper';
 
     const QuanitityType = {
@@ -19,6 +20,8 @@
     let sellDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
     let description = null, isInCash = true;
     let fullAmount = null, fullAmountChanged = false, change = null;
+    let showSellConfirmation = false, sellConfirmed = false;
+    let sellConfirmationMessage = "";
 
     const productService = ProductService.getInstance();
 
@@ -62,26 +65,38 @@
     }
 
     async function onSubmit() {
-        if(!amount) return;
-        let res = await productService.sellProduct(_id, amount, sellingPrice, sellDate, description, isInCash);
-        if (res.status === 200) {
-          availableAmount = null;
-          show=false;
-          submited = true;
-          _id = res._id;
-          quantity = res.newQuantity;
-          originalPrice = res.newOriginalPrice;
-          amount = null;
-          fullPrice = null;
-          description = null;
-          isInCash = true;
-          fullAmount = null;
-          change = null;
-        } else {
-          warningModalMessage = 'დაფიქსირდა შეცდომა პროდუქტისთვის რაოდენობის დაკლების დროს!'
-          showWarningModal = true;
-          return;
-        }
+      if(!amount) return;
+      sellConfirmationMessage = "დარწმუნებული ხართ, რომ გსურთ პროდუქტის გაყიდვა?";
+      showSellConfirmation = true;
+    }
+    
+    async function sell() {
+      if(!amount) return;
+      let res = await productService.sellProduct(_id, amount, sellingPrice, sellDate, description, isInCash);
+      if (res.status === 200) {
+        availableAmount = null;
+        show=false;
+        submited = true;
+        _id = res._id;
+        quantity = res.newQuantity;
+        originalPrice = res.newOriginalPrice;
+        amount = null;
+        fullPrice = null;
+        description = null;
+        isInCash = true;
+        fullAmount = null;
+        change = null;
+      } else {
+        warningModalMessage = 'დაფიქსირდა შეცდომა პროდუქტისთვის რაოდენობის დაკლების დროს!'
+        showWarningModal = true;
+        return;
+      }
+      sellConfirmed = false;
+      showSellConfirmation = false;
+    }
+
+    $: if (sellConfirmed) {
+      sell();
     }
 
     $: {
@@ -228,4 +243,10 @@
 <WarningModal
 bind:show={showWarningModal}
 bind:message={warningModalMessage}
+/>
+
+<ConfirmModal
+bind:show={showSellConfirmation}
+bind:confirmed={sellConfirmed}
+bind:message={sellConfirmationMessage}
 />

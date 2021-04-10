@@ -1,6 +1,6 @@
 <script>
     import { onDestroy, onMount } from 'svelte';
-import { ObjectHelper } from '../utils/ObjectHelper';
+    import { ObjectHelper } from '../utils/ObjectHelper';
     import WarningModal from './WarningModal.svelte'
 
     export let show = false, toDeleteId, service, submited;
