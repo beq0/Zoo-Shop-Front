@@ -12,7 +12,6 @@
     import { NumberHelper } from "../utils/NumberHelper";
     import { AutoCompleteHelper } from "../utils/AutoCompleteHelper"
     import ImportFileModal from "../components/ImportFileModal.svelte";
-import Link from "svelte-routing/src/Link.svelte";
 
     export let show = {};
 
@@ -151,10 +150,8 @@ import Link from "svelte-routing/src/Link.svelte";
 
         if (importSubmitted) {
             importSubmitted = false;
-            allProducts = [...allProducts, ...productsAdded];
-            products = [...productsAdded, ...products];
-            allProductCodes = [...allProductCodes, ...(productsAdded.map(e => e.code))]
-            allProductNames = [...allProductNames, ...(productsAdded.map(e => e.name))]
+            navigate("/home");
+            setTimeout(() => navigate("/products"), 10);
             productsAdded = [];
         }
 

@@ -1,6 +1,7 @@
 <script>
     import { onMount } from 'svelte';
     import WarningModal from '../components/WarningModal.svelte'
+    import { ExcelGenerator } from "../utils/ExcelGenerator";
 
     export let show = false, service, productsAdded, submitted;
 
@@ -35,7 +36,9 @@
     }
 
     function downloadTemplate() {
-        console.log("download template");
+        const columnNames = ["კოდი", "სახელი", "პროვ. კოდი", "პროვ. სახელი", "ტიპი", "გასაყიდი ფასი", "რაოდენობა", "ასაღები ფასი", "რაოდ. ტიპი", "ოფიციალური (კი/არა)"];
+        let content = [[]]; 
+        ExcelGenerator.saveWithOneSheet("შაბლონი", "შაბლონი", "ზ", "შაბლონი", "შაბლონი", columnNames, content);
     }
 
     function onChange(event) {

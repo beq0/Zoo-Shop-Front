@@ -9,6 +9,14 @@ export class ExcelGenerator {
     static saveWithOneSheet(title, subject, author, sheetName, fileName, columnNames, content) {
         let wb = XLSX.utils.book_new();
 
+        let wscols = [];
+
+        columnNames.forEach(e => {
+            let toAdd = {};
+            toAdd['wch'] = e.length + 5;
+            wscols.push(toAdd);
+        });
+
         wb.Props = {
                 Title: title,
                 Subject: subject,
@@ -20,6 +28,7 @@ export class ExcelGenerator {
         let ws_data = content;
         ws_data.unshift(columnNames);
         let ws = XLSX.utils.aoa_to_sheet(ws_data);
+        ws['!cols'] = wscols;
         wb.Sheets[sheetName] = ws;
         let wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
 
