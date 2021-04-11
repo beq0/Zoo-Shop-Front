@@ -292,6 +292,7 @@
             <td class="sum-empty-td sum-td">ჯამი:</td>
             <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
+            {#if isInCash}
             <td class="sum-empty-td sum-td" style="padding-left: 0; padding-right: 0;">
                 <div class="td-input">
                     <div style="margin-right: 10px; font-size: 13px; text-align: center;">მთლიანი თანხა:</div>
@@ -304,6 +305,10 @@
                     <input type="number" class="form-control" bind:value={change} readonly>
                 </div>
             </td>
+            {:else}
+            <td class="sum-empty-td sum-td"></td>
+            <td class="sum-empty-td sum-td"></td>
+            {/if}
             <td class="financial-td sum-td">{sum} ₾</td>
             <td class="sum-empty-td sum-td">
                 <div class="td-input">

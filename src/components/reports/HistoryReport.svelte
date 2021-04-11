@@ -46,7 +46,8 @@
     }
     
     async function onSubmit() {
-        const columnNames = ['კოდი', 'სახელი', 'ტიპი', 'გაყიდვის თარიღი', 'გაყიდული რაოდენობა', 'ასაღები ფასი', 'გასაყიდი ფასი', 'მოგება'];
+        const columnNames = ['კოდი', 'სახელი', 'ტიპი', 'გაყიდვის თარიღი', 'გაყიდული რაოდენობა', 
+        'ასაღები ფასი', 'გასაყიდი ფასი', 'მოგება', 'შენიშვნა'];
         let filters = {
             productCode: filterProductCode,
             productName: filterProductName,
@@ -61,16 +62,17 @@
         let content = [[]];
         filteredHistories.forEach(history => {
             let currRow = [];
-            currRow.push(history.productCode)
-            currRow.push(history.productName)
-            currRow.push(history.productType)
-            currRow.push(DateFormats.formatDate(history.sellDate))
-            currRow.push(history.amount)
-            currRow.push(history.originalPrice)
-            currRow.push(history.sellingPrice)
-            currRow.push(history.benefit)
+            currRow.push(history.productCode);
+            currRow.push(history.productName);
+            currRow.push(history.productType);
+            currRow.push(DateFormats.formatDate(history.sellDate));
+            currRow.push(history.amount);
+            currRow.push(history.originalPrice);
+            currRow.push(history.sellingPrice);
+            currRow.push(history.benefit);
+            currRow.push(history.description);
             content.push(currRow);
-        })
+        });
         ExcelGenerator.saveWithOneSheet("გაყიდვის ისტორია", "გაყიდვის ისტორია", "ზ", fileName, fileName, columnNames, content)
         onClose();
     }

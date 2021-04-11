@@ -51,8 +51,9 @@
     }
     
     async function onSubmit() {
-        const columnNames = ['კოდი', 'სახელი', 'ტიპი', 'ჯამური გასაყიდი ფასი', 'ჯამური ასაღები ფასი', 'გასაყიდი ფასი', 'ასაღები ფასი', 
-        'რაოდენობა', 'რაოდ. ტიპი', 'ოფიციალური', 'განახლების თარიღი', 'შექმნის თარიღი'];
+        const columnNames = ['კოდი', 'სახელი',  'პროვ. კოდი', 'პროვ. სახელი', 'ტიპი', 'ჯამური გასაყიდი ფასი', 
+        'ჯამური ასაღები ფასი', 'გასაყიდი ფასი', 'ასაღები ფასი', 'რაოდენობა', 'რაოდ. ტიპი', 'ოფიციალური', 
+        'განახლების თარიღი', 'შექმნის თარიღი'];
         let filters = {
             code: filterCode,
             name: filterName,
@@ -69,6 +70,8 @@
             let currRow = [];
             currRow.push(prod.code);
             currRow.push(prod.name);
+            currRow.push(prod.providerCode);
+            currRow.push(prod.providerName);
             currRow.push(prod.productType);
             currRow.push((prod.sellingPrice * getWholeQuantity(prod)).toFixed(2));
             currRow.push((prod.originalPrice * getWholeQuantity(prod)).toFixed(2));

@@ -44,6 +44,14 @@ th {
   border-width: 2px;
   border-style: solid;
   border-radius: 20px;
+  overflow-y: scroll;
+  max-height: 775px;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+}
+
+.content::-webkit-scrollbar {
+  display: none;
 }
 
 .popup .content {
@@ -174,7 +182,7 @@ th {
 }
 
 .table td {
-  font-size: 13px;
+  font-size: 14px;
 }
 
 
