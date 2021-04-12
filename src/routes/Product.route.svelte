@@ -33,7 +33,7 @@
     let productService = ProductService.getInstance(), parameterService = ParameterService.getInstance();
     
     let columnNames = ['კოდი', 'სახელი', 'პროვ. კოდი', 'პროვ. სახელი', 'ტიპი', 'ჯამ. გასა. ფასი', 'ჯამ. ასა. ფასი',
-        'გასა. ფასი', 'ასა. ფასი', 'რაოდენობა', 'რაოდ. ტიპი', 'განახ. თარიღი', 'შექმნ. თარიღი'];
+        'გასა. ფასი', 'ასა. ფასი', 'რაოდენობა', 'შექმნ. თარიღი'];
     let toolbarShown = false, filterCode = '', filterName='', filterType='', filterStartPrice=null, filterEndPrice=null;
     let showProductModal = false, isChange = false, showSellModal = false;
     let _id, productCode = null, name = null, productType = ProductType[0], sellingPrice = null, providerCode = null, 
@@ -398,8 +398,6 @@
             </td>
             <td class="sum-empty-td sum-td"></td>
             <td class="sum-empty-td sum-td"></td>
-            <td class="sum-empty-td sum-td"></td>
-            <td class="sum-empty-td sum-td"></td>
         </tr>
         {#each products as product, i}
         <tr>
@@ -414,8 +412,6 @@
             <td class="financial-td">{NumberHelper.isNonZero(product.originalPrice) ? product.originalPrice.toFixed(2) : 0} ₾</td>
             <td>{((getWholeQuantity(product)).toFixed(product.quantityType == QuantityType.WEIGHT ? 3 : 0)) +
                  (product.quantityType == QuantityType.WEIGHT ? " კგ." : " ც.")}</td>
-            <td>{product.quantityType}</td>
-            <td>{getDateString(product.lastChangeDate)}</td>
             <td>{getDateString(product.createDate)}</td>
             <td style="padding-right: 5px;">
                 <div class="actionButtonsDiv">
