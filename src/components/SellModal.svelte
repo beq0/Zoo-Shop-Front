@@ -140,9 +140,9 @@
         amount = availableAmount;
       }
 
-      // if the amount is not the integer and the product's quantity type is COUNT, floor the amount
+      // if the amount is not the integer and the product's quantity type is COUNT, round the amount
       if (isCountType() && !isInt(amount)) {
-        amount = Math.floor(amount);
+        amount = Math.round(amount);
       }
       
       // if the amount's decimal points are more than 3, fix it to 3
@@ -157,7 +157,7 @@
 
     function getAmount() {
       let result = fullPrice / sellingPrice;
-      if (isCountType()) result = Math.floor(result);
+      if (isCountType()) result = Math.round(result);
       else result = result.toFixed(3);
       return result;
     }

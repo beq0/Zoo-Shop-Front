@@ -295,7 +295,7 @@
             <td>{history.productType}</td>
             <td>{DateFormats.formatDate(history.sellDate)}</td>
             <td>{history.isInCash ? 'ნაღდი' : 'ბარათით'}</td>
-            <td>{Number.isInteger(history.amount) ? history.amount : history.amount.toFixed(3)}</td>
+            <td>{Number.isInteger(history.amount) ? history.amount : history.amount.toFixed(3)} {history.quantityType == QuantityType.COUNT ? ' ც' : ' კგ.'}</td>
             <td style="text-align: end;">{(history.sellingPrice * history.amount).toFixed(2)} ₾</td>
             <td style="text-align: end;">{history.sellingPrice.toFixed(2)} ₾</td>
             <td style="text-align: end;">{history.originalPrice.toFixed(2)} ₾</td>

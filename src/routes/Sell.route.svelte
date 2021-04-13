@@ -6,6 +6,11 @@
     import ConfirmModal from '../components/ConfirmModal.svelte';
     import {NumberHelper} from "../utils/NumberHelper";
 
+    const QuanitityType = {
+        COUNT: "ცალობითი",
+        WEIGHT: "წონითი"
+    }
+
     export let data;
     const columnNames = ["კოდი", "სახელი", "საცალო ფასი", "რაოდენობა", "ტიპი", "ჯამური ფასი", "შენიშვნა"];
     const productService = ProductService.getInstance();
@@ -99,21 +104,58 @@
         addEventListener('quantityorprice', () => {
             sum = 0;
             keys.forEach((key) => {
+                pricesByKey[key] = parseFloat(pricesByKey[key].toFixed(2));
                 let max = getWholeQuantity(productsMap[key]);
-                if(items[key] > max) 
-                    items[key] = max;
+                items[key] = fixAmount(items[key], max, productsMap[key].quantityType);
                 totalPricesByKey[key] = items[key] * pricesByKey[key];
+                totalPricesByKey[key] = parseFloat(totalPricesByKey[key].toFixed(2));
                 sum += totalPricesByKey[key];
             });
+            sum = parseFloat(sum.toFixed(2));
         });
         addEventListener('totalprice', () => {
             sum = 0;
             keys.forEach((key) => {
-                items[key] = totalPricesByKey[key] / pricesByKey[key];
+                let max = getWholeQuantity(productsMap[key]);
+                if (totalPricesByKey[key] > max * pricesByKey[key]) {
+                    totalPricesByKey[key] = max * pricesByKey[key];
+                }
+                totalPricesByKey[key] = parseFloat(totalPricesByKey[key].toFixed(2));
+                items[key] = fixAmount(totalPricesByKey[key] / pricesByKey[key], max, productsMap[key].quantityType);
                 sum += totalPricesByKey[key];
             });
+            sum = parseFloat(sum.toFixed(2));
         });
     }); 
+
+    function fixAmount(amount, availableAmount, quantityType) {
+      // if the amount is less than 0 or more than the available amount, fix it
+        if (amount < 0) {
+            amount = 0;
+        } else if ((availableAmount || availableAmount == 0) && availableAmount - amount <= 0) {
+            amount = availableAmount;
+        }
+
+        // if the amount is not the integer and the product's quantity type is COUNT, round the amount
+        if (isCountType(quantityType) && !isInt(amount)) {
+            amount = Math.round(amount);
+        }
+        
+        // if the amount's decimal points are more than 3, fix it to 3
+        if (!isCountType() && getDecimalPoints(amount) > 3) {
+            amount = amount.toFixed(3);
+        }
+        
+        return amount;
+    }
+
+    function isCountType(quantityType) {
+        return quantityType == QuanitityType.COUNT;
+    }
+
+    function isInt(n) {
+        return n % 1 === 0;
+    }
 
     function onDelete(key) {
         items[key] = 0;
