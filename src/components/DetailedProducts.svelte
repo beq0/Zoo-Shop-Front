@@ -43,7 +43,7 @@
                 <h5 class="modal-title">დეტალური რაოდენობები:</h5>
                 <div class="amounts">
                     {#each Object.keys(products) as productName, i}
-                        <div><span class="product-name">{productName}: </span>{products[productName]}</div>
+                        <div><span class="product-name">{productName}:&nbsp;&nbsp;</span>{products[productName]}</div>
                     {/each}
                 </div>
                 <hr>

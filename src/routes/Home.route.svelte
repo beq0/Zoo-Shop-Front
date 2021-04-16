@@ -13,6 +13,7 @@
     let productsSold = {}, yearlyBenefit = 0, monthlyBenefit = 0, dailyBenefit = 0, yearlySellingPrice = 0, monthlySellingPrice = 0, dailySellingPrice = 0;
     let showDetailedProducts = false, detailedAmounts = {};
     let dailySoldInCash = 0, monthlySoldInCash = 0, yearlySoldInCash = 0;
+    let dailySellingPriceInCash = 0, monthlySellingPriceInCash = 0, yearlySellingPriceInCash = 0;
 
     let allProducts = [], allProductNames = [];
     
@@ -36,6 +37,7 @@
         productsSold = {}, yearlyBenefit = 0, monthlyBenefit = 0, dailyBenefit = 0, yearlySellingPrice = 0;
         monthlySellingPrice = 0, dailySellingPrice = 0, detailedAmounts = {};
         dailySoldInCash = 0, monthlySoldInCash = 0, yearlySoldInCash = 0;
+        dailySellingPriceInCash = 0, monthlySellingPriceInCash = 0, yearlySellingPriceInCash = 0;
 
         let filters = {
             productName: filterName,
@@ -60,17 +62,26 @@
             const currAmount = history.amount;
             const currBenefit = history.benefit;
             const currWholeSellingPrice = history.sellingPrice * currAmount;
-            if (history.isInCash) yearlySoldInCash += currBenefit;
+            if (history.isInCash) {
+                yearlySoldInCash += currBenefit;
+                yearlySellingPriceInCash += currWholeSellingPrice;
+            }
             productsSold[history.productName].amount += currAmount;
             productsSold[history.productName].yearlyBenefit += currBenefit;
             productsSold[history.productName].yearlySellingPrice += currWholeSellingPrice;
             if (date.getFullYear() === history.sellDate.getFullYear() && date.getMonth() === history.sellDate.getMonth()) {
-                if (history.isInCash) monthlySoldInCash += currBenefit;
+                if (history.isInCash) {
+                    monthlySoldInCash += currBenefit;
+                    monthlySellingPriceInCash += currWholeSellingPrice;
+                }
                 productsSold[history.productName].monthlyBenefit += currBenefit;
                 productsSold[history.productName].monthlySellingPrice += currWholeSellingPrice;
             }
             if (new Date().toDateString() == history.sellDate.toDateString()) { 
-                if (history.isInCash) dailySoldInCash += currBenefit;
+                if (history.isInCash) {
+                    dailySoldInCash += currBenefit;
+                    dailySellingPriceInCash += currWholeSellingPrice; 
+                }
                 productsSold[history.productName].dailyBenefit += currBenefit;
                 productsSold[history.productName].dailySellingPrice += currWholeSellingPrice;
             }
@@ -162,7 +173,7 @@
     .vertical-line {
         border-left: 4px solid white;
         border-radius: 20px;
-        height: 620px;
+        height: 650px;
         margin-top: 30px;
     }
     
@@ -170,7 +181,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        height: 550px;   
+        height: 600px;   
         margin-top: 50px;   
     }
 
@@ -234,6 +245,12 @@
 
     .result-winning {
         color: #00c400;
+    }
+
+    .selling-price-info {
+        color: #5f5f5f;
+        font-size: 13px;
+        font-weight: normal;
     }
 
 </style>
@@ -322,7 +339,17 @@
                         ნავაჭრი
                     </div>
                     <div class="result-result">
-                        {yearlySellingPrice.toFixed(2)} ₾
+                        <div>
+                            {yearlySellingPrice.toFixed(2)} ₾
+                        </div>
+                        <div class="selling-price-info">
+                            <div>
+                                ნაღდი: {yearlySellingPriceInCash.toFixed(2)} ₾
+                            </div>
+                            <div>
+                                ბარათით: {(yearlySellingPrice - yearlySellingPriceInCash).toFixed(2)} ₾
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -352,8 +379,19 @@
                         ნავაჭრი
                     </div>
                     <div class="result-result">
-                        {monthlySellingPrice.toFixed(2)} ₾
+                        <div>
+                            {monthlySellingPrice.toFixed(2)} ₾
+                        </div>
+                        <div class="selling-price-info">
+                            <div>
+                                ნაღდი: {monthlySellingPriceInCash.toFixed(2)} ₾
+                            </div>
+                            <div>
+                                ბარათით: {(monthlySellingPrice - monthlySellingPriceInCash).toFixed(2)} ₾
+                            </div>
+                        </div>
                     </div>
+                    
                 </div>
             </div>
         </div>
@@ -382,7 +420,17 @@
                         ნავაჭრი
                     </div>
                     <div class="result-result">
-                        {dailySellingPrice.toFixed(2)} ₾
+                        <div>
+                            {dailySellingPrice.toFixed(2)} ₾
+                        </div>
+                        <div class="selling-price-info">
+                            <div>
+                                ნაღდი: {dailySellingPriceInCash.toFixed(2)} ₾
+                            </div>
+                            <div>
+                                ბარათით: {(dailySellingPrice - dailySellingPriceInCash).toFixed(2)} ₾
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
