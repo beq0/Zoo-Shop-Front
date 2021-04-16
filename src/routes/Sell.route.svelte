@@ -41,6 +41,7 @@
     $: if(data.add) {
         setTimeout(() => {
             if(!products) return;
+            data.keysPressed = getScannedCode(data.keysPressed);
             if(!productsMap[data.keysPressed]) {
                 //maybe add more later
                 return;
@@ -58,6 +59,16 @@
             dispatchEvent(quantityOrPriceChangeEvent); 
         }, 40);
         data.add = false;
+    }
+
+    function getScannedCode(str) {
+        const SHIFT = 'Shift';
+        let i = str.indexOf(SHIFT);
+        while (i !== -1) {
+            str = str.substr(0, i) + str[i + SHIFT.length].toUpperCase() + str.substr(i + SHIFT.length + 1);
+            i = str.indexOf(SHIFT);
+        }
+        return str;
     }
 
     $: if(manuallyAdded) {
