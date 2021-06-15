@@ -173,7 +173,7 @@
     </div>
 
     <div class="form-group">
-      <div class="label">პროვ. კოდი: <span class="required-field" title="სავალდებულო ველი">*</span></div>
+      <div class="label">პროვ. კოდი:</div>
       <input type="text" class="form-control" bind:value={providerCode} required>
     </div>
     
